@@ -1,0 +1,25 @@
+# FILE: infra/docker-compose.yml
+version: '3.8'
+services:
+  antigravity:
+    image: antigravity/browser:latest
+    shm_size: '2gb'
+    environment:
+      CHROME_ARGS: "--no-sandbox --disable-gpu --disable-dev-shm-usage --single-process"
+      NODE_OPTIONS: "--max-old-space-size=2048"
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
+        reservations:
+          cpus: '2'
+          memory: 2G
+    restart: always
+    healthcheck:
+      test: ["CMD", "pgrep", "chromium"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    ports:
+      - "3000:3000"

@@ -1,0 +1,342 @@
+{
+    "brands": [
+        {
+            "name": "Midea",
+            "aliases": [
+                "Midea",
+                "MIDEA",
+                "Carrier Midea"
+            ],
+            "models": [
+                {
+                    "name": "Vita Inverter",
+                    "pattern": "38VFCA*",
+                    "type": "residential"
+                },
+                {
+                    "name": "Springer Midea Inverter",
+                    "pattern": "38MBCA*",
+                    "type": "residential"
+                },
+                {
+                    "name": "All Easy Pro",
+                    "pattern": "38MFCA*",
+                    "type": "residential"
+                },
+                {
+                    "name": "VRF Midea",
+                    "pattern": "MV*",
+                    "type": "commercial"
+                }
+            ]
+        },
+        {
+            "name": "Samsung",
+            "aliases": [
+                "Samsung",
+                "SAMSUNG"
+            ],
+            "models": [
+                {
+                    "name": "Wind-Free",
+                    "pattern": "AR*TXEA*",
+                    "type": "residential"
+                },
+                {
+                    "name": "DVM S",
+                    "pattern": "AM*",
+                    "type": "commercial"
+                },
+                {
+                    "name": "360 Cassette",
+                    "pattern": "AC*",
+                    "type": "commercial"
+                }
+            ]
+        },
+        {
+            "name": "LG",
+            "aliases": [
+                "LG",
+                "LG Electronics"
+            ],
+            "models": [
+                {
+                    "name": "Dual Inverter",
+                    "pattern": "S4-Q*",
+                    "type": "residential"
+                },
+                {
+                    "name": "Art Cool",
+                    "pattern": "S4NQ*",
+                    "type": "residential"
+                },
+                {
+                    "name": "Multi V",
+                    "pattern": "ARUN*",
+                    "type": "commercial"
+                },
+                {
+                    "name": "Multi V 5",
+                    "pattern": "ARUV*",
+                    "type": "commercial"
+                }
+            ]
+        },
+        {
+            "name": "Daikin",
+            "aliases": [
+                "Daikin",
+                "DAIKIN"
+            ],
+            "models": [
+                {
+                    "name": "Sensira Inverter",
+                    "pattern": "FTK*",
+                    "type": "residential"
+                },
+                {
+                    "name": "Sky Air",
+                    "pattern": "FCQ*",
+                    "type": "commercial"
+                },
+                {
+                    "name": "VRV IV",
+                    "pattern": "RXYQ*",
+                    "type": "commercial"
+                },
+                {
+                    "name": "VRV",
+                    "pattern": "RXY*",
+                    "type": "commercial"
+                }
+            ]
+        },
+        {
+            "name": "Fujitsu",
+            "aliases": [
+                "Fujitsu",
+                "FUJITSU",
+                "Fujitsu General"
+            ],
+            "models": [
+                {
+                    "name": "Inverter ASBG",
+                    "pattern": "ASBG*",
+                    "type": "residential"
+                },
+                {
+                    "name": "Airstage",
+                    "pattern": "AJY*",
+                    "type": "commercial"
+                },
+                {
+                    "name": "J-IV Series",
+                    "pattern": "AOUG*",
+                    "type": "commercial"
+                }
+            ]
+        },
+        {
+            "name": "Gree",
+            "aliases": [
+                "Gree",
+                "GREE"
+            ],
+            "models": [
+                {
+                    "name": "Eco Garden Inverter",
+                    "pattern": "GWC*I1*",
+                    "type": "residential"
+                },
+                {
+                    "name": "G-TOP Inverter",
+                    "pattern": "GWC*QD*",
+                    "type": "residential"
+                },
+                {
+                    "name": "GMV",
+                    "pattern": "GMV*",
+                    "type": "commercial"
+                }
+            ]
+        },
+        {
+            "name": "Elgin",
+            "aliases": [
+                "Elgin",
+                "ELGIN"
+            ],
+            "models": [
+                {
+                    "name": "Eco Inverter II",
+                    "pattern": "HVFI*",
+                    "type": "residential"
+                },
+                {
+                    "name": "Eco Inverter",
+                    "pattern": "HVFE*",
+                    "type": "residential"
+                }
+            ]
+        },
+        {
+            "name": "Hitachi",
+            "aliases": [
+                "Hitachi",
+                "HITACHI",
+                "Johnson Controls-Hitachi"
+            ],
+            "models": [
+                {
+                    "name": "RAS Inverter",
+                    "pattern": "RAS*",
+                    "type": "residential"
+                },
+                {
+                    "name": "Set Free",
+                    "pattern": "RAS*FSN*",
+                    "type": "commercial"
+                }
+            ]
+        },
+        {
+            "name": "Carrier",
+            "aliases": [
+                "Carrier",
+                "CARRIER"
+            ],
+            "models": [
+                {
+                    "name": "X-Power Inverter",
+                    "pattern": "42MFC*",
+                    "type": "residential"
+                },
+                {
+                    "name": "XForce Inverter",
+                    "pattern": "42XQV*",
+                    "type": "residential"
+                },
+                {
+                    "name": "VRF",
+                    "pattern": "38VM*",
+                    "type": "commercial"
+                }
+            ]
+        },
+        {
+            "name": "Trane",
+            "aliases": [
+                "Trane",
+                "TRANE"
+            ],
+            "models": [
+                {
+                    "name": "Inverter",
+                    "pattern": "4MWI*",
+                    "type": "residential"
+                },
+                {
+                    "name": "VRF IntelliPak",
+                    "pattern": "TVR*",
+                    "type": "commercial"
+                }
+            ]
+        }
+    ],
+    "vfd_brands": [
+        {
+            "name": "WEG",
+            "aliases": [
+                "WEG"
+            ],
+            "models": [
+                {
+                    "name": "CFW500",
+                    "pattern": "CFW500*"
+                },
+                {
+                    "name": "CFW700",
+                    "pattern": "CFW700*"
+                },
+                {
+                    "name": "CFW900",
+                    "pattern": "CFW900*"
+                },
+                {
+                    "name": "CFW11",
+                    "pattern": "CFW11*"
+                }
+            ]
+        },
+        {
+            "name": "ABB",
+            "aliases": [
+                "ABB"
+            ],
+            "models": [
+                {
+                    "name": "ACS580",
+                    "pattern": "ACS580*"
+                },
+                {
+                    "name": "ACS880",
+                    "pattern": "ACS880*"
+                },
+                {
+                    "name": "ACS355",
+                    "pattern": "ACS355*"
+                }
+            ]
+        },
+        {
+            "name": "Schneider",
+            "aliases": [
+                "Schneider",
+                "Schneider Electric"
+            ],
+            "models": [
+                {
+                    "name": "Altivar 320",
+                    "pattern": "ATV320*"
+                },
+                {
+                    "name": "Altivar 930",
+                    "pattern": "ATV930*"
+                }
+            ]
+        },
+        {
+            "name": "Danfoss",
+            "aliases": [
+                "Danfoss"
+            ],
+            "models": [
+                {
+                    "name": "VLT HVAC Drive",
+                    "pattern": "FC-102*"
+                },
+                {
+                    "name": "VACON 100",
+                    "pattern": "VACON*"
+                }
+            ]
+        },
+        {
+            "name": "Yaskawa",
+            "aliases": [
+                "Yaskawa"
+            ],
+            "models": [
+                {
+                    "name": "GA500",
+                    "pattern": "GA500*"
+                },
+                {
+                    "name": "GA700",
+                    "pattern": "GA700*"
+                }
+            ]
+        }
+    ]
+}
