@@ -1,0 +1,2 @@
+Model                                      Input      Ctx      Local Auth  Tags
+openrouter/pony-alpha                      -          -        -     -     default,configured,missing

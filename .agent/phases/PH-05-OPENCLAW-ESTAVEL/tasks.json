@@ -1,0 +1,112 @@
+{
+    "phase": "PH-05-OPENCLAW-ESTAVEL",
+    "status": "done",
+    "current_task": null,
+    "tasks": [
+        {
+            "id": "5A-1",
+            "group": "LIMPEZA",
+            "title": "Matar processos órfãos (clawhub, system-monitor-mcp, playwright)",
+            "status": "done",
+            "command": "pkill -f clawhub; pkill -f system-monitor-mcp; pkill -f 'playwright uninstall'"
+        },
+        {
+            "id": "5A-2",
+            "group": "LIMPEZA",
+            "title": "Validar que apenas openclaw-gateway sobrevive",
+            "status": "done",
+            "command": "ps aux | grep -E 'openclaw|claw' | grep -v grep"
+        },
+        {
+            "id": "5A-3",
+            "group": "LIMPEZA",
+            "title": "Limpar logs antigos",
+            "status": "done",
+            "command": "sudo rm -f /tmp/openclaw/openclaw-2026-02-1[0-9].log"
+        },
+        {
+            "id": "5B-1",
+            "group": "DASHBOARD_AUTH",
+            "title": "Obter gateway token",
+            "status": "done",
+            "command": "openclaw config get gateway.auth.token"
+        },
+        {
+            "id": "5B-2",
+            "group": "DASHBOARD_AUTH",
+            "title": "Abrir Dashboard com token correto",
+            "status": "done",
+            "command": "openclaw dashboard"
+        },
+        {
+            "id": "5B-3",
+            "group": "DASHBOARD_AUTH",
+            "title": "Verificar conexão sem loop de reconexão",
+            "status": "done",
+            "depends_on": "5B-2"
+        },
+        {
+            "id": "5C-1",
+            "group": "SEGURANCA",
+            "title": "Revogar tokens comprometidos e atualizar .env",
+            "status": "done",
+            "manual": true,
+            "note": "Ação concluída pelo usuário e validada pelo agente"
+        },
+        {
+            "id": "5C-2",
+            "group": "SEGURANCA",
+            "title": "Criar .env.example com placeholders",
+            "status": "done"
+        },
+        {
+            "id": "5C-3",
+            "group": "SEGURANCA",
+            "title": "Confirmar .env no .gitignore",
+            "status": "done",
+            "command": "grep -q '.env' .gitignore && echo 'OK' || echo '.env >> .gitignore'"
+        },
+        {
+            "id": "5C-4",
+            "group": "SEGURANCA",
+            "title": "Limpar credenciais do histórico Git",
+            "status": "pending",
+            "manual": true,
+            "note": "Opcional: Requer limpeza de histórico se o repo for público"
+        },
+        {
+            "id": "5D-1",
+            "group": "CONFIG_BEST_PRACTICES",
+            "title": "Configurar browser.headless: true",
+            "status": "done",
+            "command": "openclaw config set browser.headless true"
+        },
+        {
+            "id": "5D-2",
+            "group": "CONFIG_BEST_PRACTICES",
+            "title": "Rodar openclaw doctor para validar config",
+            "status": "done",
+            "command": "openclaw doctor"
+        },
+        {
+            "id": "5D-3",
+            "group": "CONFIG_BEST_PRACTICES",
+            "title": "Executar openclaw status --deep",
+            "status": "done",
+            "command": "openclaw status --deep"
+        },
+        {
+            "id": "5E-1",
+            "group": "VALIDACAO_FINAL",
+            "title": "Telegram OK com novas credenciais",
+            "status": "done",
+            "command": "openclaw status"
+        },
+        {
+            "id": "5E-2",
+            "group": "VALIDACAO_FINAL",
+            "title": "Service Restart and Token Sync",
+            "status": "done"
+        }
+    ]
+}
