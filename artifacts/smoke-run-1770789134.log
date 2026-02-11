@@ -1,0 +1,11 @@
+TIMESTAMP: Wed Feb 11 02:52:14 AM -03 2026
+USER: zappro
+PWD: /home/zappro/antigravity-zero
+---
+🔍 Running Jarvis Smoke Core...
+✅ [RUNTIME] Node.js v22 (v22.22.0)
+✅ [CACHE] Redis PONG (PONG)
+✅ [ENGINE] OpenClaw CLI (2026.2.9)
+✅ [ENV] .env Exists (ok)
+🔍 Running Browser Smoke Test (via @playwright/test)...
+🚀 Launching browser with optimized args...

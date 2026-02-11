@@ -1,0 +1,15 @@
+🔍 Running Browser Smoke Test (via @playwright/test)...
+🚀 Launching browser with optimized args...
+❌ Browser validation failed: browserType.launch: Executable doesn't exist at /home/zappro/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell
+╔═════════════════════════════════════════════════════════════════════════╗
+║ Looks like Playwright Test or Playwright was just installed or updated. ║
+║ Please run the following command to download new browsers:              ║
+║                                                                         ║
+║     npx playwright install                                              ║
+║                                                                         ║
+║ <3 Playwright Team                                                      ║
+╚═════════════════════════════════════════════════════════════════════════╝
+    at /home/zappro/antigravity-zero/tools/smoke-browser.mjs:9:40
+    at /home/zappro/antigravity-zero/tools/smoke-browser.mjs:36:3 {
+  name: 'Error'
+}

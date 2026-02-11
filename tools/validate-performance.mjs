@@ -6,6 +6,7 @@ async function validate() {
     try {
         const browser = await chromium.launch({
             headless: true,
+            channel: 'chrome',
             args: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
         });
         const page = await browser.newPage();

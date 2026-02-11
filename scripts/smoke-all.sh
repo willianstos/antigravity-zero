@@ -11,12 +11,20 @@ LOG_FILE="artifacts/smoke-run-$(date +%s).log"
   echo "PWD: $PWD"
   echo "---"
   
+
   # 1. Core Tool Check
   if [ -f tools/smoke-core.mjs ]; then
     node tools/smoke-core.mjs
   else
     echo "❌ tools/smoke-core.mjs missing!"
     exit 1
+  fi
+
+  # 2. Browser Check
+  if [ -f tools/smoke-browser.mjs ]; then
+    node tools/smoke-browser.mjs
+  else
+    echo "⚠️ tools/smoke-browser.mjs missing, skipping browser check."
   fi
 
 } | tee -a "$LOG_FILE"

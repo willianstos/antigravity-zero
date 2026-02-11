@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "system-monitor": {
+      "command": "node",
+      "args": [
+        "/home/zappro/antigravity-zero/tools/system-monitor-mcp.mjs"
+      ]
+    }
+  },
+  "imports": []
+}

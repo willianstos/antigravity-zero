@@ -4,6 +4,7 @@ import { chromium } from 'playwright';
 export async function createOptimizedBrowser() {
     const browser = await chromium.launch({
         headless: true,
+        channel: 'chrome',
         args: [
             '--no-sandbox',
             '--disable-gpu',
