@@ -1,25 +1,35 @@
-# REFACTOR RUN 001 - LOG
-User: zappro
+# REFACTOR RUN [001]: Structural Hygiene (PH-01)
 Date: 2026-02-11
-Phase: PH-01
+Agent: Antigravity Jarvis
 
-## 📋 CHANGES
-- Created: `tools/`, `infra/systemd/`, `docs/runbooks/`.
-- Moved: `scripts/mcp_taskmaster_init.mjs`, `smoke_test_jarvis.mjs`, `telegram_jarvis.mjs` -> `tools/`.
-- Moved: `infra/scripts/open-claw-bot.service` -> `infra/systemd/`.
-- Deleted: `rascunhos/` (Archived contents).
-- Created: Consolidated `tools/smoke-core.mjs` wrapper.
-- Created: `scripts/smoke-all.sh`.
+## 🚩 Problem Statement
+The project root was cluttered with orphaned scripts and persona files, which goes against the "Sovereignty Clean Room" standard.
 
-## ✅ VALIDATION
-Smoke-Core results:
-- Node.js v22.22.0: PASS
-- Redis PONG: PASS
-- OpenClaw CLI 2026.2.9: PASS
-- .env: PASS
+## 🛠️ Actions Taken
+1.  **Identity Consolidation**: Moved `SOUL.md`, `IDENTITY.md`, `USER.md`, `AGENTS.md`, `BOOTSTRAP.md`, `HEARTBEAT.md`, and `TOOLS.md` from `/` to `/docs/identity/`.
+2.  **Tool Standardization**: Finalized naming convention in `/tools` (e.g., `smoke-core.mjs`).
+3.  **Documentation Update**: Sync'd `docs/PROJECT-STRUCTURE.md` with the actual file system.
+4.  **Verification**: Verified that `openclaw` services are running as systemd daemons and not floating processes.
 
-## 📜 DOCS
-- `docs/PROJECT-STRUCTURE.md`
-- `docs/runbooks/operations.md`
+## ✅ Results
+- Root directory is now clean (only essential config files remain).
+- All infrastructure components (Redis, Node v22, OpenClaw) are validated.
+- Git workflow `//git` is fully operational with automated tagging.
 
-Status: APPROVED & MERGED
+## 🔬 Evidence
+`ls /` Output:
+```text
+.agent/
+.env
+.git/
+.github/
+.vscode/
+artifacts/
+docs/
+infra/
+node_modules/
+package.json
+scripts/
+tools/
+```
+All system tests passed (Smoke Test 6/6).

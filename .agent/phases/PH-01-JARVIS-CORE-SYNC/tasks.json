@@ -36,22 +36,27 @@
     {
       "id": "2.4",
       "desc": "Instalar OpenClaw CLI",
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": "3.1",
       "desc": "OpenClaw Login",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "4.1",
       "desc": "Criar Systemd Service",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "5.1",
       "desc": "Smoke Test Final",
-      "status": "pending"
+      "status": "done"
+    },
+    {
+      "id": "6.1",
+      "desc": "Refactor Copilot & Structural Hygiene",
+      "status": "done"
     }
   ]
 }

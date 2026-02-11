@@ -6,14 +6,16 @@ Status: Refactored
 
 ### `/tools`
 Executable Node.js modules (.mjs) containing core logic.
-- `mcp-init.mjs`: Taskmaster initialization logic.
-- `smoke-jarvis.mjs`: System validation checks.
-- `telegram-bot.mjs`: High-level bot interface.
+- `smoke-core.mjs`: System validation checks.
+- `git-auto.mjs`: Git automation (branch/commit/tag).
+- `git-phase-manager.mjs`: Phase management logic.
+- `github-mcp-server.mjs`: Native GitHub MCP server.
 
 ### `/scripts`
 Bash wrappers (.sh) for environment setup and execution orchestration.
 - `install_ph01_master.sh`: Infra hardening entrypoint.
 - `ativar_modo_liberal.sh`: Development mode toggle.
+- `smoke-all.sh`: Orchestrates all smoke tests.
 
 ### `/infra`
 Infrastructure as Code (IaC) and system configurations.
@@ -26,9 +28,11 @@ The "Brain" of the operation.
 - `rules/`: Governance policies (Sudo, Secrets, Sovereignty).
 - `phases/`: Project management state (PRDs, Tasks).
 - `skills/`: Specialized instructional sets.
+- `workflows/`: Standard operating procedures (MCP Taskmaster, Git).
 
 ### `/docs`
 Human and Agent-readable documentation.
+- `identity/`: Core persona and agent identity (SOUL, IDENTITY, etc).
 - `runbooks/`: Operational procedures.
 - `drafts/`: Unsorted notes and scratchpad.
 
