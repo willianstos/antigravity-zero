@@ -1,0 +1,15 @@
+[Unit]
+Description=Open Claw Bot - Jarvis Gateway
+After=network.target redis-server.service
+
+[Service]
+Type=simple
+User=zappro
+WorkingDirectory=/home/zappro/antigravity-zero
+EnvironmentFile=/home/zappro/antigravity-zero/.env
+ExecStart=/usr/bin/openclaw start
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

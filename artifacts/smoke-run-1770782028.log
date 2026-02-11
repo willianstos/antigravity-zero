@@ -1,0 +1,8 @@
+TIMESTAMP: Wed Feb 11 12:53:48 AM -03 2026
+USER: zappro
+PWD: /home/zappro/antigravity-zero
+---
+🔍 Running Jarvis Smoke Core...
+✅ [RUNTIME] Node.js v22
+✅ [CACHE] Redis PONG
+✅ [ENV] .env Exists
