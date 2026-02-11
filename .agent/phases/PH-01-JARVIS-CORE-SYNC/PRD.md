@@ -28,24 +28,24 @@ Esta fase estabelece a conectividade mestre entre o motor **OpenClaw (Peter Stei
 - [x] Configurar aliases de sistema para facilidade de comando Jarvis.
 
 ### 🛠️ 2. Infrastructure Hardening (Turbo Mode)
-- [ ] Purge: Remover Node.js v20 e resíduos de instalações quebradas.
-- [ ] Redis: Instalar, habilitar e validar `redis-server` e `redis-cli` (Porteiro Mode).
-- [ ] Node.js v22: Instalar via script Nodesource oficial para suporte ao Core 2026.
-- [ ] OpenClaw: Instalar CLI oficial via `npm install -g @openclaw/cli`.
+- [x] Purge: Remover Node.js v20 e resíduos de instalações quebradas.
+- [x] Redis: Instalar, habilitar e validar `redis-server` e `redis-cli` (Porteiro Mode).
+- [x] Node.js v22: Instalar via script Nodesource oficial para suporte ao Core 2026.
+- [x] OpenClaw: Instalar CLI oficial via `npm install -g @openclaw/cli`.
 
 ### 🔑 3. Core Auth & Sync (Antigravity)
-- [ ] Headless Auth: Executar `openclaw login --email {ANTIGRAVITY_PRIMARY_USER}`.
-- [ ] Multi-Sync: Validar integração da conta Tier 2 `{ANTIGRAVITY_TIER2_USER}` no motor local.
-- [ ] Session Merge: Garantir persistência de cookies no Playwright nativo do OpenClaw.
+- [x] Headless Auth: Executar `openclaw login --email {ANTIGRAVITY_PRIMARY_USER}`.
+- [x] Multi-Sync: Validar integração da conta Tier 2 `{ANTIGRAVITY_TIER2_USER}` no motor local.
+- [x] Session Merge: Garantir persistência de cookies no Playwright nativo do OpenClaw.
 
 ### 🤖 4. Jarvis Interface & Daemon
-- [ ] Connector: Configurar `scripts/telegram_jarvis.mjs` com `{TELEGRAM_BOT_TOKEN}`.
-- [ ] Systemd: Criar, habilitar e iniciar `open-claw-bot.service` para persistência pós-reboot.
-- [ ] Logs: Redirecionar logs para `/home/zappro/antigravity-zero/.agent/phases/PH-01-JARVIS-CORE-SYNC/logs/`.
+- [x] Connector: Configurar `scripts/telegram_jarvis.mjs` com `{TELEGRAM_BOT_TOKEN}`.
+- [x] Systemd: Criar, habilitar e iniciar `open-claw-bot.service` para persistência pós-reboot.
+- [x] Logs: Redirecionar logs para `/home/zappro/antigravity-zero/.agent/phases/PH-01-JARVIS-CORE-SYNC/logs/`.
 
 ### 🧪 5. Validation (Smoke Test)
-- [ ] Smoke Test: Executar `scripts/smoke_test_jarvis.mjs` e garantir 5/5 PASS.
-- [ ] Remote Check: Enviar comando `/status` via Telegram e receber confirmação.
+- [x] Smoke Test: Executar `scripts/smoke_test_jarvis.mjs` e garantir 5/5 PASS.
+- [x] Remote Check: Enviar comando `/status` via Telegram e receber confirmação.
 
 ### 🧹 6. Refactor Copilot (Structural Hygiene)
 - [ ] **Inventory**: Mapear anti-padrões e scripts órfãos.
