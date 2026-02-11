@@ -1,1 +1,29 @@
 .env
+node_modules/
+inject_core.py
+.DS_Store
+*.log
+.openclaw/
+.antigravity/
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# System
+.DS_Store
+Thumbs.db
+
+# OpenClaw & Secrets
+.openclaw/
+.antigravity/
+.env
+.env.*
+!.env.example
+inject_core.py
+*.log
+tmp/
+
+# Security (Emergency Keys)
+artifacts/security/emergency/*.pem
+artifacts/security/emergency/master-key.pem

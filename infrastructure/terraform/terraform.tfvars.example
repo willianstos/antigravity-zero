@@ -1,0 +1,16 @@
+# SENSITIVE: Do NOT commit this file to Git
+# Add to .gitignore immediately
+
+# K3s cluster token (generate with: openssl rand -hex 32)
+k3s_token = "CHANGE_ME_GENERATE_SECURE_TOKEN"
+
+# Network configuration (adjust to your home lab)
+h1_ip = "192.168.1.100"
+h2_ip = "192.168.1.101"
+
+# SSH configuration
+ssh_user             = "zappro"
+ssh_private_key_path = "~/.ssh/id_rsa"
+
+# K3s version
+k3s_version = "v1.28.5+k3s1"

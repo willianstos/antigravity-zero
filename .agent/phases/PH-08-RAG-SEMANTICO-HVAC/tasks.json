@@ -1,0 +1,67 @@
+{
+    "phase": "PH-08-RAG-SEMANTICO-HVAC",
+    "status": "in_progress",
+    "tasks": [
+        {
+            "id": "08-01",
+            "title": "Setup de Diretórios e Dependências",
+            "description": "Criar estrutura de pastas backend/rag, data/pdfs, data/qdrant e instalar pacotes npm/pip necessários.",
+            "command": "mkdir -p backend/rag/brands data/pdfs/{inbox,approved,rejected,processing} data/markdown data/qdrant && npm install @qdrant/js-client-rest langchain glob dotenv",
+            "status": "completed",
+            "type": "run_command"
+        },
+        {
+            "id": "08-02",
+            "title": "Catálogo de Marcas (Brands JSON)",
+            "description": "Criar o arquivo brands.json com a lista de marcas e padrões de modelos inverter.",
+            "command": "node tools/create-brands-json.mjs",
+            "status": "completed",
+            "type": "file_create",
+            "path": "backend/rag/brands/brands.json"
+        },
+        {
+            "id": "08-03",
+            "title": "Implementar Classificador HVAC",
+            "description": "Criar o script hvac-classifier.mjs com a lógica de whitelist/blacklist baseada em regex técnico.",
+            "command": "",
+            "status": "completed",
+            "type": "file_create",
+            "path": "backend/rag/hvac-classifier.mjs"
+        },
+        {
+            "id": "08-04",
+            "title": "Skill: Classificador HVAC",
+            "description": "Registrar a skill no OpenClaw para uso via comando /classificar.",
+            "command": "",
+            "status": "completed",
+            "type": "file_create",
+            "path": ".agent/skills/classificador-hvac/SKILL.md"
+        },
+        {
+            "id": "08-05",
+            "title": "Implementar Extrator de Metadados",
+            "description": "Criar hvac-metadata.mjs para extrair BTU, Tensão, Gás e Tipo do markdown.",
+            "command": "",
+            "status": "completed",
+            "type": "file_create",
+            "path": "backend/rag/hvac-metadata.mjs"
+        },
+        {
+            "id": "08-06",
+            "title": "Implementar Pipeline de Ingestão",
+            "description": "Criar hvac-ingest.mjs que orquestra Docling -> Classificador -> Qdrant.",
+            "command": "",
+            "status": "completed",
+            "type": "file_create",
+            "path": "backend/rag/hvac-ingest.mjs"
+        },
+        {
+            "id": "08-09",
+            "title": "Criar Collections Segregadas",
+            "description": "Inicializar collections isoladas no Qdrant: domain-hvac, domain-code, domain-will, domain-openclaw.",
+            "command": "node backend/rag/init-domains.mjs",
+            "status": "completed",
+            "type": "run_command"
+        }
+    ]
+}
