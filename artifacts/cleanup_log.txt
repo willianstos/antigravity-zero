@@ -1,0 +1,4 @@
+# Cleanup and Restart Log - 2026-02-11
+1. Killing zombie processes: chromium, playwright, antigravity.
+2. Cleaning cache: ~/.cache/ms-playwright, ~/.cache/chromium.
+3. Restarting antigravity.

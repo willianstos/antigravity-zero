@@ -1,0 +1,32 @@
+{
+    "phase": "PH-03-ADVANCED-INTEGRATIONS",
+    "status": "in_progress",
+    "current_task": "Setup Base Skills",
+    "tasks": [
+        {
+            "id": "1",
+            "desc": "Instalação de Skills (Clawhub)",
+            "status": "pending"
+        },
+        {
+            "id": "2",
+            "desc": "Custom System-Monitor MCP Server",
+            "status": "pending"
+        },
+        {
+            "id": "3",
+            "desc": "Integração Perplexity/Firecrawl",
+            "status": "pending"
+        },
+        {
+            "id": "4",
+            "desc": "Telegram Multimodal support",
+            "status": "pending"
+        },
+        {
+            "id": "5",
+            "desc": "Final Connectivity Smoke Test",
+            "status": "pending"
+        }
+    ]
+}

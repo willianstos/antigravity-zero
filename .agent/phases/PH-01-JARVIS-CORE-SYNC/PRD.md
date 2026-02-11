@@ -48,10 +48,10 @@ Esta fase estabelece a conectividade mestre entre o motor **OpenClaw (Peter Stei
 - [x] Remote Check: Enviar comando `/status` via Telegram e receber confirmação.
 
 ### 🧹 6. Refactor Copilot (Structural Hygiene)
-- [ ] **Inventory**: Mapear anti-padrões e scripts órfãos.
-- [ ] **Standardization**: Migrar para estrutura `tools/`, `scripts/`, `infra/systemd/`.
-- [ ] **Consolidation**: Unificar smoke tests em `tools/smoke-core.mjs`.
-- [ ] **Documentation**: Gerar `docs/PROJECT-STRUCTURE.md` e `artifacts/refactor-run-001.md`.
+- [x] **Inventory**: Mapear anti-padrões e scripts órfãos.
+- [x] **Standardization**: Migrar para estrutura `tools/`, `scripts/`, `infra/systemd/`.
+- [x] **Consolidation**: Unificar smoke tests em `tools/smoke-core.mjs`.
+- [x] **Documentation**: Gerar `docs/PROJECT-STRUCTURE.md` e `artifacts/refactor-run-001.md`.
 
 ---
 *Assinado: Jarvis Orquestrador (Antigravity Subagent) em 11/02/2026*
