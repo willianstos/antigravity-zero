@@ -1,27 +1,31 @@
 ---
-description: Workflow para Commit, Push e Sincronização GitOps (Full-Auto 2026)
+description: Workflow para Commit, Push e Sincronização Dinâmica (Feature ou Main)
 ---
 
 # Workflow: GitOps Sync (Soberano) // turbo-all
 
-Este workflow orquestra a sincronização total entre o H2 local e a Cloud (GitHub), garantindo que nada seja perdido.
+Este workflow orquestra a sincronização total entre o H2 local e a Cloud (GitHub), adaptando-se automaticamente à branch atual ou criando uma nova feature se solicitado.
 
-## Protocolo de Sincronização Automática
+## Protocolo de Sincronização Dinâmica
 
 // turbo
-1. **Reconciliação Local**
-   O agente limpa lixos e prepara o estado.
+1. **Verificação e Movimentação de Branch**
+   Se um nome de feature for passado, o agente realiza o checkout.
+   `git checkout -b {feature-name} 2>/dev/null || git checkout {feature-name} || echo "Mantendo branch atual"`
+
+2. **Reconciliação de Estado**
    `git add . && git status`
 
-2. **Commit Atômico**
-   `git commit -m "feat(sync): sovereign reconciliation at $(date +%H:%M:%S) 🦅" --allow-empty`
+3. **Commit Atômico com Contexto**
+   Se um nome for fornecido, ele será usado no commit. Caso contrário, usa-se o timestamp de elite.
+   `git commit -m "feat(sync/$(git branch --show-current)): reconciliation at $(date +%H:%M:%S) 🦅" --allow-empty`
 
-3. **Cloud Sync (Zero-Pass)**
-   Push imediato para o GitHub sem pedido de senha.
-   `git push origin main`
+4. **Cloud Sync (Push HEAD)**
+   Faz o push da branch atual para o origin, garantindo a liberdade de movimento.
+   `git push origin HEAD`
 
-4. **Auditoria de Secrets (GitHub Actions)**
-   O agente lembra o usuário de que os Secrets no GitHub foram sincronizados via Terraform.
+5. **Auditoria de Deployment**
+   O agente confirma a branch de destino e lembra da sincronização de Secrets via Terraform.
 
 ---
-*Assinado: Zelador do Código H2 - Automação Total*
+*Assinado: Zelador do Código H2 - Automação Total v2.1*
