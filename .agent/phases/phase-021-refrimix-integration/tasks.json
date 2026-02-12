@@ -1,0 +1,23 @@
+{
+    "phase": "021-refrimix-integration",
+    "status": "in-progress",
+    "current_task": "task-001-mesh-setup",
+    "tasks": [
+        {
+            "id": "task-001-mesh-setup",
+            "description": "Configurar Tailscale Mesh no Nó H2",
+            "status": "completed"
+        },
+        {
+            "id": "task-002-supply-scraper",
+            "description": "Implementar bin/refrimix-supply-check.py",
+            "status": "completed"
+        },
+        {
+            "id": "task-003-dash-integration",
+            "description": "Integrar Status de Rede Mesh no Dashboard",
+            "status": "in-progress"
+        }
+    ],
+    "summary": "Iniciando integração de rede mesh e automação de suprimentos para a Refrimix."
+}

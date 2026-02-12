@@ -21,11 +21,21 @@ async function monitorCluster() {
     let stats = {
         k3s: "Offline",
         localstack: "Offline",
+        mesh: "Disconnected",
         gpu_temp: 0,
         entropy: 0
     };
 
     try {
+        // Check Mesh Status
+        try {
+            const meshInfo = execSync("tailscale status --json").toString();
+            const meshPos = JSON.parse(meshInfo);
+            stats.mesh = meshPos.BackendState === "Running" ? "Active" : "Idle";
+        } catch (e) {
+            stats.mesh = "Not Found";
+        }
+
         // 1. Check LocalStack
         try {
             const lsStatus = execSync("docker inspect -f '{{.State.Status}}' localstack_refrimix").toString().trim();
