@@ -1,0 +1,6 @@
+{
+    "project": "Antigravity Zero H2",
+    "ai": {
+        "model": "openai/gpt-4o"
+    }
+}

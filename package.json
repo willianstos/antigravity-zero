@@ -4,7 +4,10 @@
   "description": "Hello World demo project",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "ai:fix": "./bin/opencode-sov run '/fix --all'",
+    "ai:review": "./bin/opencode-sov run '/review ./src'",
+    "ai:docs": "./bin/opencode-sov run '/document --pattern **/*.ts --style JSDoc'"
   },
   "engines": {
     "node": ">=14"

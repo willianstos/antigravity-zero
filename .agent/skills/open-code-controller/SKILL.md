@@ -31,6 +31,12 @@ Consulte `.agent/skills/open-code-controller/CLI_MANUAL.md` para comandos de bai
 - **Slash Commands**: `/add` para contexto, `/fix` para erros de compilação.
 - **Atalhos**: `Ctrl+R` roda o projeto, `Ctrl+L` limpa a tela.
 
+## 5. DevOps & Repositórios (H2) 🏗️
+Consulte `.agent/skills/open-code-controller/DEVOPS_GUIDE.md` para criar novos serviços.
+- **Micro-repositórios**: Use `modules/[nome]`.
+- **Git & GitHub**: Autenticado via Wrapper (`opencode-sov`).
+- **Secrets**: `.env` é sagrado. Nunca commite segredos.
+
 ## 🧱 Workflow Master
 1. **Validar**: O usuário pede uma feature complexa.
 2. **Orquestrar**:

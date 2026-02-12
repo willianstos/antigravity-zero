@@ -1,25 +1,74 @@
 #!/bin/bash
-# 🦅 Open Code Sovereign Wrapper (v12.0)
-# Carrega automaticamente as chaves do .env e executa o Open Code com identidade.
+# 🦅 Open Code Sovereign Wrapper (v2.0 Polyfill)
+# Permite usar o schema de configuração v2.0 (opencode.json) com o binário v1.x.
+# Oculta o arquivo JSON incompatível durante a execução e injeta as configurações via flags.
 
-# 1. Carregar variáveis de ambiente
+CONFIG_FILE="opencode.json"
+HIDDEN_CONFIG=".opencode.json.sov.tmp"
+
+# Funcao de limpeza garantida (Trap)
+restore_config() {
+    if [ -f "$HIDDEN_CONFIG" ]; then
+        mv "$HIDDEN_CONFIG" "$CONFIG_FILE"
+    fi
+}
+trap restore_config EXIT
+
+# 1. Carregar variáveis do .env (Soberania de Chaves)
 if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 
-# 2. Configurar identidade Git (se não estiver configurada)
+# 2. Configurar identidade Git (Soberania de Identidade)
 if [ -z "$(git config --global user.email)" ]; then
     git config --global user.email "jarvis@antigravity.sov"
     git config --global user.name "Jarvis Sovereign"
 fi
 
-# 3. Executar Open Code com os argumentos passados
-# Se nenhum argumento for passado, abre o modo interativo (TUI)
-echo "🦅 Iniciando Open Code (Sovereign Mode)..."
-echo "🔑 Keys carregadas: OpenAI, Perplexity, GitHub."
+# 3. Parse Inteligente da Configuração v2.0
+ARGS=""
 
-if [ $# -eq 0 ]; then
-    /usr/bin/opencode
-else
-    /usr/bin/opencode "$@"
+if [ -f "$CONFIG_FILE" ]; then
+    echo "⚙️  Lendo opencode.json (v2.0)..."
+    
+    # Extração robusta usando python3
+    # Mapeia: ai.model -> -m, ai.temperature -> (ignoramos se CLI nao suportar ou passamos via env se suportado)
+    # Por enquanto, focamos no MODEL que é critico.
+    
+    PY_PAYLOAD="
+import json, sys
+try:
+    with open('$CONFIG_FILE') as f:
+        data = json.load(f)
+        ai = data.get('ai', {})
+        model = ai.get('model')
+        provider = ai.get('provider')
+        if model:
+            if provider:
+                print(f'MODEL={provider}/{model}')
+            else:
+                print(f'MODEL={model}')
+except Exception as e:
+    sys.stderr.write(f'Erro no parse: {e}\n')
+"
+    # Executa o python e avalia as variaveis exportadas
+    eval "$(python3 -c "$PY_PAYLOAD")"
+
+    if [ ! -z "$MODEL" ]; then
+        # Verifica se o usuário já passou a flag -m nos argumentos manuais
+        if [[ "$*" != *"-m"* ]]; then
+            ARGS="$ARGS -m $MODEL"
+            echo "🎯 Modelo Selecionado (Config): $MODEL"
+        else
+            echo "⚠️  Config de modelo ignorada (sobrescrita por argumento manual)"
+        fi
+    fi
+
+    # Oculta o arquivo v2.0 para evitar crash do binário v1.1.60
+    # "Unrecognized keys: project, ai..."
+    mv "$CONFIG_FILE" "$HIDDEN_CONFIG"
 fi
+
+# 4. Execução do Binário Legado
+echo "🦅 Executing Open Code CLI..."
+/usr/bin/opencode $ARGS "$@"
