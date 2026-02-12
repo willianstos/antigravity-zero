@@ -2,22 +2,26 @@
 description: Automação Git simplificada (Branch + Commit + Tag). Acionado por //git {feature}.
 ---
 
-# Workflow: Git Feature Auto
+# Workflow: Git Feature Auto (Full-Auto 2026) // turbo-all
 
-Este workflow automatiza o ciclo de versionamento de uma feature.
-Gatilho: `//git {nome-da-feature}`
+Este workflow automatiza o ciclo completo de versionamento e push. Graças ao Git Credential Store, o processo é 100% autônomo.
 
-## Passos
+## Ciclo de Execução Soberana
 
-1. **Executar Tool de Automação**
-   O agente deve rodar o script `tools/git-auto.mjs` passando o nome da feature fornecido pelo usuário.
-   
-   Exemplo:
-   Se o usuário digitar `//git configurar-api`, executar:
-   `node tools/git-auto.mjs configurar-api`
+// turbo
+1. **Disparo da Tool Mestra**
+   O agente executa o script de automação com o nome da feature (formato kebab-case).
+   `node tools/git-auto.mjs {feature-name}`
 
-2. **Validar Saída**
-   Verificar se o commit e a tag foram criados com sucesso.
+2. **Sincronização Cloud**
+   O script faz o push automático. O agente valida o status.
+   `git push origin HEAD --tags`
 
-3. **Confirmação**
-   Informar ao usuário o nome da branch, a mensagem do commit (gerada aleatoriamente) e a tag criada.
+3. **Reporte de Sucesso**
+   Entregar o relatório mastigado:
+   > 🚀 **Feature Deployed**: `feature/{nome}`
+   > 🔖 **Tag**: `v...`
+   > 🔗 **Repo**: [GitHub](https://github.com/willianstos/antigravity-zero)
+
+---
+*Assinado: Jarvis Sovereign - Sincronização Infinita*

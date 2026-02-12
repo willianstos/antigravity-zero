@@ -10,21 +10,14 @@ terraform {
       source  = "hashicorp/null"
       version = "~> 3.2"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 5.0"
+    }
   }
 
-  backend "s3" {
-    bucket                      = "terraform-state"
-    key                         = "homelab/k3s/terraform.tfstate"
-    region                      = "us-east-1"
-    endpoint                    = "http://localhost:9000"  # MinIO endpoint
-    skip_credentials_validation = true
-    skip_metadata_api_check     = true
-    skip_region_validation      = true
-    force_path_style            = true
-    
-    # Credentials via environment variables:
-    # AWS_ACCESS_KEY_ID=minioadmin
-    # AWS_SECRET_ACCESS_KEY=minioadmin
+  backend "local" {
+    path = "terraform.tfstate"
   }
 }
 

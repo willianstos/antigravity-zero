@@ -1,27 +1,27 @@
 ---
-description: Workflow para Commit, Push e Sincronização GitOps (Gitea + GitHub + Argo CD)
+description: Workflow para Commit, Push e Sincronização GitOps (Full-Auto 2026)
 ---
 
-Este workflow automatiza o ciclo de vida do código, garantindo que as mudanças locais cheguem ao Argo CD de forma segura.
+# Workflow: GitOps Sync (Soberano) // turbo-all
 
-## Passos do Ciclo de Elite
+Este workflow orquestra a sincronização total entre o H2 local e a Cloud (GitHub), garantindo que nada seja perdido.
 
-1.  **Verificação de Status**
-    - Roda `git status` para garantir que não há lixo no repo.
+## Protocolo de Sincronização Automática
 
-2.  **Commit Padronizado (Antigravity 2026)**
-    - Adiciona mudanças e faz commit com mensagem técnica clara.
-    - Ex: `git add . && git commit -m "feat(infra): add argo-cd sync patterns"`
+// turbo
+1. **Reconciliação Local**
+   O agente limpa lixos e prepara o estado.
+   `git add . && git status`
 
-3.  **Push Duplo (Soberania)**
-    - Primeiro para o **Gitea** (Local) para deploy imediato no cluster K3s.
-    - Segundo para o **GitHub** (Nuvem) para backup e auditoria.
-    - `// turbo`
-    - `git push gitea main && git push github main`
+2. **Commit Atômico**
+   `git commit -m "feat(sync): sovereign reconciliation at $(date +%H:%M:%S) 🦅" --allow-empty`
 
-4.  **Sincronização Argo CD**
-    - Força o refresh do Argo CD para refletir o novo estado do Git.
-    - `argocd app sync open-claw-bot --force`
+3. **Cloud Sync (Zero-Pass)**
+   Push imediato para o GitHub sem pedido de senha.
+   `git push origin main`
+
+4. **Auditoria de Secrets (GitHub Actions)**
+   O agente lembra o usuário de que os Secrets no GitHub foram sincronizados via Terraform.
 
 ---
-*Assinado: Zelador do Código H2 em 10/02/2026*
+*Assinado: Zelador do Código H2 - Automação Total*

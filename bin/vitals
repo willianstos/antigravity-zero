@@ -1,0 +1,52 @@
+#!/bin/bash
+# Eagle Eye: Status Sovereign v4.0
+
+BOLD='\033[1m'
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+echo -e "${BOLD}🦅 Eagle Eye: Status Sovereign v4.0${NC}"
+echo "------------------------------------------"
+
+# Host & IP
+echo -n "Host: $(hostname) | IP: "
+hostname -I | awk '{print $1}'
+
+# Hardware
+echo -n "Memória: "
+free -h | grep Mem | awk '{print $3 " / " $2}'
+
+# Docker Qdrant
+Q_STATUS=$(docker ps --filter name=qdrant --format '{{.Status}}')
+if [[ $Q_STATUS == *"Up"* ]]; then
+    echo -e "Docker Qdrant: ${GREEN}$Q_STATUS${NC}"
+else
+    echo -e "Docker Qdrant: ${RED}DOWN${NC}"
+fi
+
+# Service OpenClaw
+S_STATUS=$(systemctl is-active openclaw.service)
+if [ "$S_STATUS" == "active" ]; then
+    echo -e "Service OpenClaw: ${GREEN}$S_STATUS${NC}"
+else
+    echo -e "Service OpenClaw: ${RED}$S_STATUS${NC}"
+fi
+
+# Health Check API
+H_STATUS=$(curl -s --connect-timeout 2 http://localhost:6333/healthz | grep -o 'passed' || echo 'FAILED')
+if [ "$H_STATUS" == "passed" ]; then
+    echo -e "Qdrant API: ${GREEN}OK${NC}"
+else
+    echo -e "Qdrant API: ${RED}ERROR${NC}"
+fi
+
+# Tailscale
+T_STATUS=$(tailscale status --peers=false 2>/dev/null | head -n 1)
+if [ -n "$T_STATUS" ]; then
+    echo "Tailscale: $T_STATUS"
+else
+    echo "Tailscale: NOT RUNNING"
+fi
+
+echo "------------------------------------------"

@@ -35,3 +35,26 @@ variable "ssh_private_key_path" {
   type        = string
   default     = "~/.ssh/id_rsa"
 }
+
+variable "github_token" {
+  description = "GitHub Personal Access Token"
+  type        = string
+  sensitive   = true
+}
+
+variable "openai_api_key" {
+  description = "OpenAI API Key for GitHub Actions"
+  type        = string
+  sensitive   = true
+}
+
+variable "telegram_bot_token" {
+  description = "Telegram Bot Token"
+  type        = string
+  sensitive   = true
+}
+
+variable "telegram_admin_id" {
+  description = "Telegram Admin/User ID"
+  type        = string
+}

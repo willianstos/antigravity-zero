@@ -11,13 +11,23 @@ Esta skill define o comportamento do OpenClaw como um especialista em recuperaç
 
 Todo conhecimento técnico, logs importantes e preferências do líder devem ser indexados. O Qdrant é a nossa **Memória de Longo Prazo**.
 
-## 🧱 Coleções de Domínio (Namespaces)
+## 🧱 Governança de Domínio (Namespaces Elite)
 
-Seguimos a segregação estrita para evitar poluição de contexto:
-- `domain-hvac`: Manuais Daikin/Hitachi, tabelas de erro, diagramas.
-- `domain-code`: Snippets BMH, padrões de arquitetura, lições aprendidas em DevOps.
-- `domain-openclaw`: Logs do Master/Worker, configurações de gateway, métricas.
-- `domain-will`: Estilo Alan Nicolas, preferências pessoais, histórico de decisões do líder.
+Seguimos a segregação estrita para garantir que os conselhos técnicos da Refrimix não se misturem com sua dieta pessoal:
+
+1.  **`domain-hvac` (HVAC-Inverter / Refrimix Tecnologia):**
+    - A base de conhecimento da sua empresa de instalação VRV/VRF.
+    - Manuais técnicos Daikin/Hitachi, tabelas de erro, diagramas e padrões de instalação de elite.
+2.  **`domain-zappro` (Zappro.site - Ativo FAQ RAG):**
+    - O cérebro por trás do chatbot que atende técnicos.
+    - Focado em inversores de frequência, placas eletrônicas e RAG semântico para suporte de campo.
+3.  **`domain-will` (WillRefrimix - Soberania Pessoal):**
+    - Sua vida, família e saúde.
+    - Treinos, dietas, organização financeira e histórico de decisões do líder.
+4.  **`domain-code` (Antigravity Codebase):**
+    - Snippets, automações GitOps, infraestrutura Terraform e lições de DevOps.
+5.  **`domain-openclaw` (Sytem Logs):**
+    - Saúde do cluster, logs do gateway e métricas de performance.
 
 ## 🕵️ Procedimento de Busca (RAG)
 
