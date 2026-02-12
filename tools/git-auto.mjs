@@ -27,12 +27,18 @@ const dateStr = now.toISOString().split('T')[0].replace(/-/g, '.'); // 2026.02.1
 const timeHash = crypto.randomBytes(2).toString('hex');
 const tagName = `v${dateStr}-${featureName}-${timeHash}`;
 
+function stripAnsi(text) {
+    return text.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+}
+
 function run(cmd) {
     try {
         console.log(`> ${cmd}`);
-        execSync(cmd, { stdio: 'inherit' });
+        const output = execSync(cmd).toString();
+        console.log(stripAnsi(output).trim());
     } catch (e) {
-        // Ignore harmless errors
+        if (e.stdout) console.log(stripAnsi(e.stdout.toString()).trim());
+        if (e.stderr) console.error(stripAnsi(e.stderr.toString()).trim());
     }
 }
 
