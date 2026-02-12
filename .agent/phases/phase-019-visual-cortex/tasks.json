@@ -1,0 +1,23 @@
+{
+    "phase": "019-visual-cortex",
+    "status": "in-progress",
+    "current_task": "task-001-setup-omni",
+    "tasks": [
+        {
+            "id": "task-001-setup-omni",
+            "description": "Configurar vLLM p/ Qwen2-7B-Omni no H2",
+            "status": "pending"
+        },
+        {
+            "id": "task-002-vision-feed",
+            "description": "Implementar bin/vision-feed.mjs (Screenshot Loop)",
+            "status": "in-progress"
+        },
+        {
+            "id": "task-003-lam-integration",
+            "description": "Desenvolver bin/vision-guided-lam.mjs",
+            "status": "pending"
+        }
+    ],
+    "summary": "Ativando o Córtex Visual Soberano. O Jarvis agora terá olhos reais no desktop H2."
+}
