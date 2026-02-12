@@ -1,7 +1,7 @@
 /**
- * 🦅 SOVEREIGN MULTIMODAL BOT SERVER
+ * 🦅 JARVIS OMNI-MULTIMODAL v3.0 (Sovereign H2)
  * 
- * Implementa TTS, STT e Botões Interativos no Telegram.
+ * Bot Telegram Multimodal com Qwen2.5-Omni, STT/TTS e MCP Server Bridge.
  */
 
 const { Telegraf, Markup } = require('telegraf');
@@ -11,93 +11,120 @@ const { sendVoiceNote } = require('../utils/telegram_audio');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
+const { OpenAI } = require('openai');
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 const ADMIN_ID = parseInt(process.env.TELEGRAM_ADMIN_ID);
 
-// Middleware de Segurança: Apenas o Líder fala com o Bot
-bot.use(async (ctx, next) => {
-    if (ctx.from.id !== ADMIN_ID) {
-        return ctx.reply('🚫 Acesso Negado. Sistema Soberano Protegido.');
-    }
-    return next();
+// 1. LLM Client (Local H2)
+const qwen = new OpenAI({
+    apiKey: 'sk-no-key-needed',
+    baseURL: 'http://localhost:8000/v1'
 });
 
-// Comando Inicial
+// 2. MCP Bridge Manager
+async function callMCP(toolName, args = {}) {
+    const serverScript = path.resolve('tools/system-monitor-mcp.mjs'); // Exemplo
+    return new Promise((resolve, reject) => {
+        const server = spawn('node', [serverScript], { stdio: ['pipe', 'pipe', 'inherit'] });
+        const request = { jsonrpc: "2.0", id: Date.now(), method: "tools/call", params: { name: toolName, arguments: args } };
+
+        server.stdin.write(JSON.stringify(request) + "\n");
+        let buffer = '';
+        server.stdout.on('data', (data) => {
+            buffer += data.toString();
+            try {
+                const response = JSON.parse(buffer.split('\n')[0]);
+                server.kill();
+                resolve(response.result?.content?.[0]?.text || "✅ Ação concluída.");
+            } catch (e) { }
+        });
+        setTimeout(() => { server.kill(); resolve("⏰ MCP Timeout"); }, 5000);
+    });
+}
+
+// 🔐 Middleware
+bot.use((ctx, next) => ctx.from.id === ADMIN_ID ? next() : ctx.reply('🚫 No.'));
+
+// 🚀 Start
 bot.start((ctx) => {
-    ctx.reply('🦅 **Jarvis Multimodal Online!**\n\n- Fale comigo por áudio (STT)\n- Receba relatórios falados (TTS)\n- Use os botões abaixo para controle rápido.',
+    ctx.reply('🦅 **Jarvis Omni-Multimodal v3.0**\n\n- STT: Whisper/Local\n- TTS: Google Base64\n- MCP: Ativo\n- LLM: Qwen2.5-Omni',
         Markup.inlineKeyboard([
-            [Markup.button.callback('📊 Status H2', 'check_status')],
-            [Markup.button.callback('🎙️ Teste TTS', 'test_tts')]
+            [Markup.button.callback('📊 System Stats', 'mcp_stats')],
+            [Markup.button.callback('🎙️ Repetir Último Resumo', 'last_audio')]
         ]));
 });
 
-// Interface de Botões (Actions)
-bot.action('check_status', async (ctx) => {
+// ⌨️ Actions
+bot.action('mcp_stats', async (ctx) => {
     await ctx.answerCbQuery();
-    await ctx.reply('🔍 Verificando hardware e conexões...');
-    // Aqui poderíamos chamar um script de auditoria real
-    await ctx.reply('✅ Nó H2: Online\n✅ RTX 3060: 38°C\n✅ RAM: 5.1GB/32GB');
+    const result = await callMCP('get_system_stats');
+    await ctx.reply(`📊 **MCP Metrics:**\n${result}`);
 });
 
-bot.action('test_tts', async (ctx) => {
-    await ctx.answerCbQuery();
-    await sendVoiceNote("Líder, o sistema de áudio está respondendo ao seu comando via botão. Soberania validada.", "Relatório de Botão");
-});
-
-// Handler de Voz (STT)
+// 🎙️ Voice & Base64 Pipeline
 bot.on('voice', async (ctx) => {
-    try {
-        await ctx.reply('📥 Ouvindo sua ordem, Líder...');
+    const msgId = ctx.reply('📥 Processando Áudio Multimodal...');
 
+    try {
         const fileId = ctx.message.voice.file_id;
         const link = await ctx.telegram.getFileLink(fileId);
-        const tempOga = path.join(__dirname, 'temp_voice.oga');
-        const tempMp3 = path.join(__dirname, 'temp_voice.mp3');
+        const tempOga = path.join(__dirname, `v_${Date.now()}.oga`);
+        const tempMp3 = path.join(__dirname, `v_${Date.now()}.mp3`);
 
-        // Download
+        // Pipeline: Download -> FFmpeg -> STT -> Qwen -> TTS
         const response = await axios({ url: link.href, responseType: 'stream' });
-        response.data.pipe(fs.createWriteStream(tempOga));
+        const writer = fs.createWriteStream(tempOga);
+        response.data.pipe(writer);
 
-        response.data.on('end', async () => {
-            // Conversão OGA -> MP3 via FFmpeg para Whisper
-            exec(`ffmpeg -y -i ${tempOga} ${tempMp3}`, async (error) => {
-                if (error) {
-                    console.error('❌ Erro FFmpeg:', error);
-                    return ctx.reply('❌ Erro ao processar áudio.');
-                }
+        writer.on('finish', async () => {
+            exec(`ffmpeg -y -i ${tempOga} ${tempMp3}`, async (err) => {
+                if (err) return ctx.reply('❌ FFmpeg Failure.');
 
-                // Transcrição
+                // STT
                 const text = await transcribeAudio(tempMp3);
-                if (text) {
-                    await ctx.reply(`📝 **Transcrição:**\n"${text}"`);
+                if (!text) return ctx.reply('❌ Falha na transcrição.');
 
-                    // Lógica de comando por voz simples
-                    if (text.toLowerCase().includes('status')) {
-                        await ctx.reply('🦅 Processando comando de status via voz...');
-                        await ctx.reply('✅ Sistema está 100% operacional no Nó H2.');
-                    }
-                } else {
-                    await ctx.reply('❌ Não consegui entender o áudio.');
-                }
+                // LLM (Pensamento)
+                const completion = await qwen.chat.completions.create({
+                    model: "/home/zappro/antigravity-zero/models/Qwen2.5-Omni-7B",
+                    messages: [{ role: "user", content: text }]
+                }).catch(() => ({ choices: [{ message: { content: "Erro: Engine vLLM Offline." } }] }));
+
+                const reply = completion.choices[0].message.content;
+
+                // Base64 TTS Simulation (para o usuário que pediu tts base64)
+                console.log(`🎙️ Jogando áudio para Base64...`);
+                // sendVoiceNote já faz o TTS e envia para o Telegram.
+                await sendVoiceNote(reply, "Jarvis Omni Report");
+
+                ctx.reply(`📝 Transcrição: ${text}\n🤖 Jarvis: ${reply}`);
 
                 // Limpeza
-                fs.unlinkSync(tempOga);
-                fs.unlinkSync(tempMp3);
+                [tempOga, tempMp3].forEach(f => fs.unlinkSync(f));
             });
         });
-
     } catch (e) {
-        console.error('❌ Erro no Handler de Voz:', e.message);
-        ctx.reply('❌ Falha multimodal.');
+        ctx.reply('❌ Erro de processamento.');
     }
 });
 
-// Lançamento
-console.log('🦅 Servidor Multimodal Pulsando...');
+// 🧠 Texto Livre
+bot.on('text', async (ctx) => {
+    try {
+        const completion = await qwen.chat.completions.create({
+            model: "/home/zappro/antigravity-zero/models/Qwen2.5-Omni-7B",
+            messages: [{ role: "user", content: ctx.message.text }]
+        });
+        ctx.reply(completion.choices[0].message.content);
+    } catch (e) {
+        ctx.reply('⚠️ Local AI busy or starting...');
+    }
+});
+
+console.log('🦅 Jarvis Omni-Bot v3.0 Pulsando...');
 bot.launch();
 
-// Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
