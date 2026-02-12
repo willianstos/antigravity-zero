@@ -1,55 +1,64 @@
 #!/usr/bin/env node
 /**
- * 👁️ Vision Feed Loop - Sovereign Visual Cortex
- * Captura a tela e prepara o buffer para o Qwen2 Omni.
+ * 👁️ Vision Feed Master (PH-MAX)
+ * Captura o desktop do H2 e alimenta o Omni Cortex (Dashboard).
  */
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
+const DASHBOARD_URL = 'http://localhost:3000/api/update-vision';
 const IAM_LOGGER = '/home/zappro/antigravity-zero/bin/iam-logger.mjs';
-const VISION_DIR = '/home/zappro/antigravity-zero/artifacts/vision_cortex';
 
 function logIAM(msg) {
     try {
         const escapedMsg = msg.replace(/"/g, '\\"');
-        execSync(`node ${IAM_LOGGER} VISION_CORTEX "${escapedMsg}"`);
-    } catch (e) {}
+        execSync(`node ${IAM_LOGGER} OMNI_EYE "${escapedMsg}"`);
+    } catch (e) { }
 }
 
-async function startVisionFeed() {
-    if (!fs.existsSync(VISION_DIR)) fs.mkdirSync(VISION_DIR, { recursive: true });
-    
-    logIAM("👁️ Córtex Visual Ativado. Iniciando captura de feed 1FPS...");
+async function captureAndSend() {
+    const tmpFile = `/tmp/vision_feed_${Date.now()}.jpg`;
 
-    // Loop infinito de captura (simulado por 10 iterações para segurança inicial)
-    for (let i = 0; i < 10; i++) {
+    try {
+        // Captura com qualidade controlada p/ não saturar banda
+        execSync(`export DISPLAY=:0 && scrot -q 30 ${tmpFile}`);
+
+        const bitmap = fs.readFileSync(tmpFile);
+        const base64 = `data:image/jpeg;base64,${bitmap.toString('base64')}`;
+
+        // Identifica janela ativa (Higiene de contexto)
+        let activeWindow = "Desktop";
         try {
-            const timestamp = Date.now();
-            const filename = `cortex_frame_${timestamp}.jpg`;
-            const filepath = path.join(VISION_DIR, filename);
-            
-            // Captura tela inteira (incluindo mouse)
-            execSync(`scrot -p -q 30 ${filepath}`);
-            
-            // Link simbólico para 'current_view.jpg' para o vLLM/Omni consumir
-            const currentView = path.join(VISION_DIR, 'current_view.jpg');
-            if (fs.existsSync(currentView)) fs.unlinkSync(currentView);
-            fs.symlinkSync(filepath, currentView);
+            activeWindow = execSync("export DISPLAY=:0 && xdotool getactivewindow getwindowname").toString().trim();
+        } catch (e) { }
 
-            // Housekeeping: manter apenas os últimos 5 frames
-            const files = fs.readdirSync(VISION_DIR).filter(f => f.endsWith('.jpg') && f !== 'current_view.jpg');
-            if (files.length > 5) {
-                files.sort().slice(0, files.length - 5).forEach(f => fs.unlinkSync(path.join(VISION_DIR, f)));
-            }
+        const payload = {
+            window: activeWindow,
+            timestamp: new Date().toISOString(),
+            image: base64
+        };
 
-            // logIAM(`📸 Frame capturado: ${filename}`);
-            await new Promise(r => setTimeout(r, 1000));
-        } catch (e) {
-            logIAM("⚠️ Erro no Feed de Visão: " + e.message);
-            break;
+        const response = await fetch(DASHBOARD_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            // logIAM(`✅ Frame enviado: ${activeWindow}`);
         }
+
+        // Cleanup
+        if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
+
+    } catch (e) {
+        logIAM(`❌ Falha no Vision Feed: ${e.message}`);
     }
 }
 
-startVisionFeed();
+logIAM("👁️ Vision Feed ativado. Sincronizando H2 com Omni Cortex...");
+
+// Loop de 5 segundos para manter a fluidez sem sobrecarga
+setInterval(captureAndSend, 5000);
+captureAndSend();
