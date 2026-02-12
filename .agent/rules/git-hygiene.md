@@ -17,10 +17,18 @@ Este documento define as regras inegociáveis para o gerenciamento de código no
 - **Sync Constante:** Use o workflow `@/git-ops-sync` para garantir que o H2 e o GitHub estejam alinhados.
 - **Mensagens Técnicas:** Mensagens de commit devem seguir o padrão `feat(escopo): descrição 🦅`.
 
-## 4. Auditoria Contínua
+## 4. Gestão de Atributos (Sovereignty Lock)
+- **Modo Edição**: Para alterar arquivos protegidos (ex: `.gitignore`), use a Skill `@mestre-git-soberano` para liberar o atributo imutável (`sudo chattr -i`).
+- **Modo Proteção**: Após a alteração, o arquivo DEVE ser trancado novamente (`sudo chattr +i`).
+
+## 5. Filtros Universais de Sobrevivência
+- Todo repositório no cluster deve ignorar: `venv*/`, `.venv*/`, `node_modules/`, `__pycache__/`.
+- Use `git clean -fd` para resetar o estado se arquivos untracked bloquearem o merge.
+
+## 6. Auditoria Contínua
 - O Jarvis deve rodar periodicamente:
   `git log -p | grep -E "sk-proj-|ghp_|AIzaSy"`
   Para garantir que nenhum "fantasma" escapou para o histórico.
 
 ---
-*Assinado: Jarvis Sovereign - Zelador do Código H2*
+*Assinado: Jarvis Sovereign - Implementando Skill @mestre-git-soberano*

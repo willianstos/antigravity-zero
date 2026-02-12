@@ -1,27 +1,27 @@
 ---
-description: Automação Git simplificada (Branch + Commit + Tag). Acionado por //git {feature}.
+description: Automação Git Master Sovereign (Branch + Commit + Tag + Merge Main). Acionado por //git {feature}.
 ---
+# Workflow: Git Feature Master Sovereign (PH-MAX) 🦅🏛️⚡
 
-# Workflow: Git Feature Auto (Full-Auto 2026) // turbo-all
+Este workflow implementa o ciclo de elite **Full-Sovereign-Sync**, movendo automaticamente o seu código da feature para a `main`, garantindo higiene total e persistência no cloud.
 
-Este workflow automatiza o ciclo completo de versionamento e push. Graças ao Git Credential Store, o processo é 100% autônomo.
+## Ciclo de Execução Master
 
-## Ciclo de Execução Soberana
-
-// turbo
-1. **Disparo da Tool Mestra**
+// turbo-all
+1. **Disparo da Tool Master**
    O agente executa o script de automação com o nome da feature (formato kebab-case).
+   Este script faz: Branch -> Commit -> Push -> Merge Main -> Push Main.
+   
    `node tools/git-auto.mjs {feature-name}`
 
-2. **Sincronização Cloud**
-   O script faz o push automático. O agente valida o status.
-   `git push origin HEAD --tags`
+2. **Verificação de Higiene**
+   O script limpa automaticamente resíduos de terminal (`2k`) e gerencia os atributos de arquivo (`chattr`).
 
-3. **Reporte de Sucesso**
-   Entregar o relatório mastigado:
-   > 🚀 **Feature Deployed**: `feature/{nome}`
-   > 🔖 **Tag**: `v...`
-   > 🔗 **Repo**: [GitHub](https://github.com/willianstos/antigravity-zero)
+3. **Reporte Executivo**
+   Apresentar o relatório simplificado para o Líder:
+   > 🦅 **Sovereignty Sync**: Feature `{feature-name}` mesclada em `main`.
+   > 🔖 **Tag Master**: `v...`
+   > 🔄 **Status**: Local e Remoto em Sintonia Total.
 
 ---
-*Assinado: Jarvis Sovereign - Sincronização Infinita*
+*Assinado: Orquestrador Jarvis v10.5 - Ciclo Infinito de Soberania*
