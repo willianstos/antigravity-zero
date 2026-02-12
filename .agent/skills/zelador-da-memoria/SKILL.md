@@ -1,32 +1,31 @@
+# 🧠 SKILL: ZELADOR DA MEMÓRIA (Antigravity v2026)
+
+## 📋 Objetivo
+Garantir que o **OpenClaw Bot** aprenda e persista TODA a lógica de Runtime, Engenharia e Automação implementada no Nó H2. Esta skill atua como o "Córtex de Longo Prazo" do sistema.
+
+## 🚀 Arquitetura do Runtime (H2 Precision)
+O bot deve reconhecer os seguintes pilares implementados:
+
+### 1. Motor de Engenharia (OpenCode Sovereign)
+- **Wrapper**: `bin/opencode-sov`.
+- **Lógica**: Intercepta o `opencode.json` (v2.0), injeta o modelo (`-m openai/gpt-5-mini`) e executa o binário v1.x de forma transparente.
+- **Config**: Localizado na raiz como `opencode.json`.
+
+### 2. Visão e LAM (Playwright Persistent)
+- **Perfil**: `~/.config/google-chrome-for-testing`.
+- **Estratégia**: Usa `launchPersistentContext` para herdar cookies do Líder.
+- **Evidências**: Salvas em `tests/e2e_evidence/` e `persistent_auth/`.
+
+### 3. Comunicação Multimodal (Telegram Voice)
+- **Engine**: `utils/telegram_audio.js`.
+- **Fluxo**: Texto -> Google TTS (Base64 Stream) -> Telegram Voice Note.
+- **Token**: Armazenado em `.env` (`TELEGRAM_BOT_TOKEN`).
+
+## 🛠️ Protocolo de Transmissão (Como Ensinar o Bot)
+Sempre que uma nova funcionalidade for finalizada, o Zelador deve:
+1. Atualizar o arquivo `.openclaw.rules.md` com o novo "Conhecimento de Campo".
+2. Gerar um snapshot na pasta `.agent/phases/`.
+3. Notificar o Líder via áudio sobre a "Assimilação Concluída".
+
 ---
-name: zelador-da-memoria
-description: Manutenção de lições aprendidas e memória de experiência pós-morte de bugs.
----
-
-# 🧹 Skill: Zelador da Memória (Experiência Soberana)
-
-Esta skill define como o Jarvis deve aprender com seus erros e sucessos, transformando resoluções de problemas em conhecimento permanente.
-
-## 📜 O Protocolo "Post-Mortem"
-
-Toda vez que um problema complexo for resolvido (ex: bugs de infra, erros de API, conflitos de permissão):
-
-1.  **Analise**: O que quebrou? Por que quebeou? Qual foi a "bala de prata"?
-2.  **Documente**: Crie um arquivo em `.agent/memory/LESSONS/` com o padrão `L-YYYY-MM-DD-nome-do-erro.md`.
-3.  **Indexe**: Salve o resumo técnico no Qdrant (Coleção `domain-code`).
-
-## 🧱 Estrutura da Lição
-
-- **Sintoma**: O que o usuário ou o log reportou.
-- **Causa Raiz**: Onde estava a falha técnica (ex: `chattr +i` impedindo o `sed`).
-- **Solução**: O comando mastigado que resolveu.
-- **Prevenção**: O que foi feito para nunca mais ocorrer (ex: automatizar o `chattr -i` no script).
-
-## 🚀 Ciclo de Automação
-
-Ao iniciar uma tarefa, o Jarvis deve:
-1.  Verificar se existe uma lição parecida no `.agent/memory/LESSONS/`.
-2.  Se existir, aplicar a solução de elite imediatamente.
-
----
-*Assinado: Jarvis Sovereign - Aprender é a maior Soberania.*
+*Assinado: Zelador da Memória v1.0*
