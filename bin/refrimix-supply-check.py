@@ -1,31 +1,42 @@
 import asyncio
 import sys
 import os
-from browser_use import Agent
-from browser_use.llm import ChatOpenAI
+from browser_use import Agent, Browser, BrowserConfig
+from langchain_openai import ChatOpenAI
 
-# Jarvis v10.5 - Refrimix Supply Scraper (Fixed & Hygienic)
-# Objetivo: Verificar estoque e preços em distribuidores HVACR.
+# Jarvis v10.5 - Refrimix Supply Master (PH-MAX)
+# Foco: Visão real no Nó H2 via vLLM-Omni e Local Intelligence.
 
 async def check_supplies(query):
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        print(f"📊 [PROSPEÇÃO] Plano de busca para: {query}")
-        return "Modo Autônomo em stand-by."
-
+    # Endpoint do cluster soberano (H1/H2)
+    base_url = os.getenv("OPENAI_API_BASE", "http://localhost:8000/v1")
+    
     try:
-        llm = ChatOpenAI(model="gpt-4o")
-        agent = Agent(
-            task=f"Acesse sites de distribuidores HVACR no Brasil e procure por: {query}. Extraia o menor preço e disponibilidade.",
-            llm=llm,
+        # Usando o vLLM local configurado como ChatOpenAI compatível
+        llm = ChatOpenAI(
+            model="qwen2-7b-omni", # Modelo alvo no H2
+            openai_api_base=base_url,
+            openai_api_key="sovereign-token"
         )
+        
+        # Configurando Browser visível (Full Motion LAM)
+        config = BrowserConfig(headless=False) 
+        browser = Browser(config=config)
+        
+        agent = Agent(
+            task=f"Acesse sites de distribuidores HVACR e procure por: {query}. Identifique preços visivelmente na tela.",
+            llm=llm,
+            browser=browser
+        )
+        
         result = await agent.run()
+        await browser.close()
         return result
     except Exception as e:
-        print(f"🔹 Nota: {e}")
+        print(f"🔹 Auditoria Visual: {e}")
         return None
 
 if __name__ == "__main__":
-    item = sys.argv[1] if len(sys.argv) > 1 else "Compressor Scroll 5HP R410A"
-    print(f"📦 [MASTER PH-MAX] Iniciando análise de mercado: {item}")
+    item = sys.argv[1] if len(sys.argv) > 1 else "Manifold Digital Testo"
+    print(f"📦 [MASTER PH-MAX] Iniciando LAM Vision Scraper: {item}")
     asyncio.run(check_supplies(item))

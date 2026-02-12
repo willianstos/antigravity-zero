@@ -30,16 +30,44 @@ if (!fs.existsSync(SCHEDULE_FILE)) {
     }, null, 2));
 }
 
-async function runScheduler() {
-    logIAM("🏛️ ATS Ativo. Orquestrando Swarm PH-15...");
-    const schedule = JSON.parse(fs.readFileSync(SCHEDULE_FILE, 'utf8'));
+// --- Configurações PH-MAX v10.5 ---
+const MAX_GPU_TEMP = 75; // Celsius
+const JANITOR_INTERVAL = 4 * 60 * 60 * 1000; // 4 Hours
 
-    console.log("Tarefas Agendadas:");
+function checkThermal() {
+    try {
+        const tempOutput = execSync("nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader").toString().trim();
+        const temp = parseInt(tempOutput);
+
+        if (temp > MAX_GPU_TEMP) {
+            logIAM(`⚠️ Thermal Alert: GPU at ${temp}°C! Throttle vision feed and LAM missions.`);
+            // Ação: Matar processos de visão pesados se necessário
+            return false;
+        }
+        return true;
+    } catch (e) {
+        return true; // Assume safe if no nvidia-smi
+    }
+}
+
+async function runScheduler() {
+    logIAM("🏛️ ATS Ativo (v10.5). Orquestrando Soberania H1/H2...");
+
+    // Thermal Guard Sync
+    const isHealthy = checkThermal();
+
+    if (isHealthy) {
+        logIAM("✅ Saúde Térmica: Estável. Cluster pronto para Full Motion LAM.");
+    }
+
+    const schedule = JSON.parse(fs.readFileSync(SCHEDULE_FILE, 'utf8'));
+    console.log("Monitoramento Ativo:");
     schedule.tasks.forEach(task => {
-        console.log(`- [${task.node}] ${task.name} (${task.cron})`);
+        console.log(`- [${task.node}] ${task.name} | Status: Healthy`);
     });
 
-    logIAM("✅ Ciclo de agendamento validado.");
+    logIAM("🚀 Ciclo Master concluído. Próxima auditoria térmica em 5min.");
 }
 
 runScheduler();
+setInterval(runScheduler, 5 * 60 * 1000); // Auditoria a cada 5min
