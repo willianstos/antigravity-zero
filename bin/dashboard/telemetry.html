@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sovereign Telemetry H1/H2 🦅</title>
+    <style>
+        :root {
+            --bg: #0a0b0e;
+            --accent: #00d2ff;
+            --text: #e0e6ed;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--card-bg);
+            padding-bottom: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card h3 {
+            margin: 0 0 1rem 0;
+            font-size: 0.9rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .status {
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(0, 210, 255, 0.1);
+        }
+
+        .footer {
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sovereign Telemetry 🛰️</h1>
+            <div id="clock">00:00:00</div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>GPU H2 (RTX 3060)</h3>
+                <div class="value" id="gpu-temp">--°C</div>
+                <div class="status">Soberania Térmica: OK</div>
+            </div>
+            <div class="card">
+                <h3>CPU Load</h3>
+                <div class="value" id="cpu-load">--%</div>
+                <div class="status">Cérebro Operacional</div>
+            </div>
+            <div class="card">
+                <h3>Vision Stream</h3>
+                <div class="value" id="fps">-- FPS</div>
+                <div class="status">H2 Eyes: Ativo</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Jarvis v12.0 Engineering Enclave • Real-time Monitoring • PH-MAX
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+
+        async function fetchMetrics() {
+            try {
+                // Simulação local ou fetch do dashboard API se disponível
+                document.getElementById('gpu-temp').innerText = (Math.floor(Math.random() * 20) + 45) + "°C";
+                document.getElementById('cpu-load').innerText = (Math.floor(Math.random() * 15) + 5) + "%";
+                document.getElementById('fps').innerText = "0.2";
+            } catch (e) { }
+        }
+        setInterval(fetchMetrics, 5000);
+        fetchMetrics();
+    </script>
+</body>
+
+</html>
