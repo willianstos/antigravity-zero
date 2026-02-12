@@ -19,12 +19,13 @@
 - **Node.js Workers**: Rodar com limite de memória de 2GB (`--max-old-space-size=2048`).
 - **Navegação Agentic (Playwright)**: Máximo **2** instâncias de navegador visíveis para controle manual secundário.
 
-### 3. Armazenamento & Limpeza (Sovereignty)
-- **Queue Cleaning**: Arquivos em `/data/manuals/queue/` devem ser limpos após ingestão bem-sucedida.
+### 3. Armazenamento & Limpeza (Janitor Protocol)
+- **Context Threshold**: Ao atingir **75%** do limite de tokens da janela de contexto, o `bin/janitor-protocol.mjs` **DEVE** ser disparado.
 - **Artifacts Retention**: Logs e screenshots em `/artifacts/` mantidos por **7 dias**, depois compactados ou deletados.
 
-## 🏛️ Governança CEO
-- Toda falha de recurso deve ser resolvida em background com **Incremental Backoff** (esperar antes de tentar carregar modelo se a VRAM estiver cheia).
-- **Prioridade Máxima**: Monitoramento Refrimix e Dashboard Sovereign.
+## 🏛️ Governança ATS (Orchestrator)
+- **Self-Healing**: Se um container LocalStack falhar, o ATS deve tentar o restart e reportar na Ata.
+- **Rate Limit**: Respeitar a concorrência de 1 tarefa de Visão por vez na 3060.
+- **Prioridade Máxima**: Monitoramento Refrimix > Automação HVAC > Background Tasks.
 
-*Assinado: Jarvis Sovereign Executive Agent*
+*Assinado: Jarvis Sovereign Orchestrator*
