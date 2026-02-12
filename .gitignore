@@ -76,3 +76,9 @@ venv*/
 .venv*/
 venv-hvac/
 venv-jarvis/
+# Agent Logs & Cache
+**/logs/*.log
+**/.ipynb_checkpoints/
+**/.pytest_cache/
+**/.ruff_cache/
+**/__pycache__/
