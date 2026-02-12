@@ -24,7 +24,7 @@ if (!fs.existsSync(SCHEDULE_FILE)) {
     fs.writeFileSync(SCHEDULE_FILE, JSON.stringify({
         tasks: [
             { id: "daily_audit", name: "Auditoria IaC Diária", cron: "0 8 * * *", command: "terraform plan", node: "H2" },
-            { id: "context_cleanup", name: "Janitor Context Compaction", cron: "*/30 * * * *", command: "node bin/janitor-protocol.mjs", node: "H1" },
+            { id: "context_cleanup", name: "Janitor Context Compaction", cron: "0 */4 * * *", command: "node bin/janitor-protocol.mjs", node: "H1" },
             { id: "gitops_reconcile", name: "GitOps Reconcile (Argo-Like)", cron: "*/5 * * * *", command: "node bin/sovereign-operator.mjs", node: "H1" }
         ]
     }, null, 2));

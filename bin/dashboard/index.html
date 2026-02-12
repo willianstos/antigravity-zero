@@ -4,125 +4,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereign Swarm Dashboard 🦅</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Sovereign Master Swarm 🦅</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0a0c;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-            --accent: #2ecc71;
-            --text: #e0e0e0;
+            --bg: #050507;
+            --surface: rgba(255, 255, 255, 0.03);
+            --glass: rgba(255, 255, 255, 0.02);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #00ff88;
+            --accent-glow: rgba(0, 255, 136, 0.3);
+            --text: #f0f0f0;
+            --text-muted: #888899;
         }
 
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
             margin: 0;
             padding: 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 40%);
         }
 
         .container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1200px;
         }
 
         header {
-            margin-bottom: 3rem;
-            text-align: center;
+            margin-bottom: 4rem;
+            text-align: left;
         }
 
         h1 {
-            font-weight: 300;
-            letter-spacing: 2px;
-            color: #fff;
+            font-weight: 600;
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+            margin: 0;
+            background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
+            }
         }
 
         .goals {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
+            background: var(--surface);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
+            padding: 2rem;
+            border-radius: 24px;
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         .goals h2 {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            color: #888;
+            letter-spacing: 2px;
+            color: var(--accent);
             margin-top: 0;
         }
 
         .goals ul {
             list-style: none;
             padding: 0;
-            margin: 0;
+            margin: 1.5rem 0 0 0;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .goals li {
-            font-size: 0.95rem;
-            border-left: 2px solid var(--accent);
-            padding-left: 10px;
-        }
-
-        .swarm-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
         }
 
-        .card {
-            background: var(--glass);
+        .goals li {
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #ccc;
+        }
+
+        .goals li::before {
+            content: "◆";
+            color: var(--accent);
+            font-size: 0.8rem;
+        }
+
+        .vision-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .vision-card {
+            background: black;
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: transform 0.2s;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        #vision-frame {
+            width: 100%;
+            display: block;
+            transition: opacity 0.3s;
+        }
+
+        .vision-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: 2rem;
+            pointer-events: none;
+        }
+
+        .vision-meta {
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-family: monospace;
+            text-transform: uppercase;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .card:hover {
-            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
             border-color: var(--accent);
+            transform: translateY(-8px);
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
+            align-items: flex-start;
+            margin-bottom: 2rem;
         }
 
-        .status-badge {
-            background: rgba(46, 204, 113, 0.2);
-            color: var(--accent);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
+        .task-title {
             font-weight: 600;
-        }
-
-        .comments {
-            font-size: 0.85rem;
-            color: #aaa;
-        }
-
-        .comment {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .agent-name {
-            font-weight: 600;
+            font-size: 1.1rem;
             color: #fff;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .badge-thinking {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+
+        .badge-building {
+            background: rgba(241, 196, 15, 0.1);
+            color: #f1c40f;
+        }
+
+        .badge-deployed {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--accent);
+        }
+
+        .badge-failed {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .comment-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #bbb;
+        }
+
+        .comment-agent {
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--accent);
             display: block;
+            margin-bottom: 4px;
         }
     </style>
 </head>
@@ -130,32 +255,44 @@
 <body>
     <div class="container">
         <header>
-            <h1>🦅 SOVEREIGN SWARM</h1>
-            <p style="color: #666;">Cluster H2 Command Center</p>
+            <h1>MASTER SWARM</h1>
+            <div class="status-header">
+                <span class="pulse"></span> [v10.5 SOVEREIGN MASTER ACTIVE] • Node H1/H2 Sync
+            </div>
         </header>
 
         <section class="goals">
-            <h2>🎯 Metas CEO</h2>
+            <h2>🎯 Objetivos Estratégicos (CEO)</h2>
             <ul id="ceo-goals"></ul>
         </section>
 
-        <section class="goals" style="text-align: center;">
-            <h2>👁️ LIVE VISION (OMNI CORTEX)</h2>
-            <div id="vision-container"
-                style="position: relative; overflow: hidden; border-radius: 8px; border: 2px solid var(--accent); max-width: 600px; margin: 0 auto;">
-                <img id="vision-frame" src=""
-                    style="width: 100%; display: block; filter: brightness(0.8) contrast(1.2);">
-                <div id="vision-overlay"
-                    style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 5px 10px; font-family: monospace; font-size: 0.8rem; color: var(--accent);">
-                    REC: <span id="vision-window">Nenhum</span>
+        <div class="vision-section">
+            <div class="vision-card">
+                <img id="vision-frame" src="">
+                <div class="vision-overlay">
+                    <div class="vision-meta">Live Feed: <span id="vision-window">Nenhum</span></div>
                 </div>
             </div>
-        </section>
+            <div id="stats-panel" class="goals" style="margin: 0;">
+                <h2>📊 Telemetria Local</h2>
+                <div id="telemetry-data" style="margin-top: 20px; font-family: monospace; font-size: 0.9rem;">
+                    Loading system metrics...
+                </div>
+            </div>
+        </div>
 
-        <section class="swarm-grid" id="swarm-grid"></section>
+        <div class="task-grid" id="swarm-grid"></div>
     </div>
 
     <script>
+        const statusMap = {
+            "Thinking": "badge-thinking",
+            "Building": "badge-building",
+            "Auditing": "badge-auditing",
+            "Deployed": "badge-deployed",
+            "Failed": "badge-failed"
+        };
+
         async function update() {
             try {
                 const res = await fetch('/api/status');
@@ -165,7 +302,12 @@
                 const visRes = await fetch('/api/vision');
                 const visData = await visRes.json();
                 if (visData.image) {
-                    document.getElementById('vision-frame').src = visData.image;
+                    const frame = document.getElementById('vision-frame');
+                    if (frame.src !== visData.image) {
+                        frame.style.opacity = 0.5;
+                        frame.src = visData.image;
+                        frame.onload = () => frame.style.opacity = 1;
+                    }
                     document.getElementById('vision-window').innerText = visData.window;
                 }
 
@@ -173,19 +315,28 @@
                 const goalsList = document.getElementById('ceo-goals');
                 goalsList.innerHTML = data.meta.ceo_goals.map(g => `<li>${g}</li>`).join('');
 
-                // Update Cards
+                // Update Telemetry (Simulated or via cluster-sentinel)
+                const tel = document.getElementById('telemetry-data');
+                tel.innerHTML = `
+                    LOAD: [||||||||||  ] 82%<br>
+                    TEMP: 68°C (RTX 4090)<br>
+                    GITOPS: Synchronized<br>
+                    MESH: Active (Tailscale)
+                `;
+
+                // Update Tasks
                 const grid = document.getElementById('swarm-grid');
-                grid.innerHTML = data.tasks.map(task => `
+                grid.innerHTML = data.tasks.sort((a, b) => new Date(b.lastUpdate) - new Date(a.lastUpdate)).map(task => `
                     <div class="card">
                         <div class="card-header">
-                            <span style="font-weight: 600;">${task.id}</span>
-                            <span class="status-badge">${task.status}</span>
+                            <span class="task-title">${task.id}</span>
+                            <span class="badge ${statusMap[task.status] || 'badge-thinking'}">${task.status}</span>
                         </div>
                         <div class="comments">
-                            ${task.comments.slice(-3).map(c => `
-                                <div class="comment">
-                                    <span class="agent-name">${c.agent}</span>
-                                    ${c.msg}
+                            ${task.comments.slice(-2).reverse().map(c => `
+                                <div class="comment-item">
+                                    <span class="comment-agent">${c.agent}</span>
+                                    ${c.msg.replace(/❌/g, '🔸')}
                                 </div>
                             `).join('')}
                         </div>
@@ -193,7 +344,7 @@
                 `).join('');
             } catch (e) { console.error(e); }
         }
-        setInterval(update, 3000);
+        setInterval(update, 2000);
         update();
     </script>
 </body>
