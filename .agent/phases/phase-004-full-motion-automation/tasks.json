@@ -1,0 +1,33 @@
+{
+    "phase": "004-full-motion-automation",
+    "status": "in-progress",
+    "current_task": "task-005-model-download",
+    "tasks": [
+        {
+            "id": "task-001-mcp-desktop",
+            "description": "Implementar bin/mcp-remote-desktop.mjs",
+            "status": "completed"
+        },
+        {
+            "id": "task-002-web-operator",
+            "description": "Criar bin/web-operator.mjs",
+            "status": "completed"
+        },
+        {
+            "id": "task-003-hotkey",
+            "description": "Configurar script de Hot-Key bin/hotkey-capture.sh",
+            "status": "completed"
+        },
+        {
+            "id": "task-004-constitution-v13",
+            "description": "Integrar Protocolo PH-13 na Constituição",
+            "status": "completed"
+        },
+        {
+            "id": "task-005-model-download",
+            "description": "Download Qwen2.5-Omni-7B (Em background)",
+            "status": "in-progress"
+        }
+    ],
+    "summary": "Full Motion LAM (PH-13) estruturado. Agentes de ação (Desktop & Web) prontos. Download do modelo vision em curso no Nó H2."
+}

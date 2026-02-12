@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sovereign Swarm Dashboard 🦅</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #2ecc71;
+            --text: #e0e0e0;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
+        header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        h1 { font-weight: 300; letter-spacing: 2px; color: #fff; }
+        .goals {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+        .goals h2 { font-size: 0.9rem; text-transform: uppercase; color: #888; margin-top: 0; }
+        .goals ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+        .goals li { font-size: 0.95rem; border-left: 2px solid var(--accent); padding-left: 10px; }
+
+        .swarm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .status-badge {
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .comments { font-size: 0.85rem; color: #aaa; }
+        .comment { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .agent-name { font-weight: 600; color: #fff; display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🦅 SOVEREIGN SWARM</h1>
+            <p style="color: #666;">Cluster H2 Command Center</p>
+        </header>
+
+        <section class="goals">
+            <h2>🎯 Metas CEO</h2>
+            <ul id="ceo-goals"></ul>
+        </section>
+
+        <section class="swarm-grid" id="swarm-grid"></section>
+    </div>
+
+    <script>
+        async function update() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                
+                // Update Goals
+                const goalsList = document.getElementById('ceo-goals');
+                goalsList.innerHTML = data.meta.ceo_goals.map(g => `<li>${g}</li>`).join('');
+
+                // Update Cards
+                const grid = document.getElementById('swarm-grid');
+                grid.innerHTML = data.tasks.map(task => `
+                    <div class="card">
+                        <div class="card-header">
+                            <span style="font-weight: 600;">${task.id}</span>
+                            <span class="status-badge">${task.status}</span>
+                        </div>
+                        <div class="comments">
+                            ${task.comments.slice(-3).map(c => `
+                                <div class="comment">
+                                    <span class="agent-name">${c.agent}</span>
+                                    ${c.msg}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+        setInterval(update, 3000);
+        update();
+    </script>
+</body>
+</html>

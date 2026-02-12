@@ -8,14 +8,26 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Bem-vindo ao centro de comando do **Open Claw Bot**. Este repositório não é apenas código; é o sistema nervoso de um orquestrador sênior projetado para dominar o Ubuntu e a infraestrutura de nuvem local com a precisão de um Jarvis (Marvel Style).",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
     "@playwright/test": "^1.58.2",
     "@qdrant/js-client-rest": "^1.16.2",
     "dotenv": "^17.2.4",
+    "express": "^5.2.1",
     "openai": "^6.21.0",
     "playwright": "^1.58.2",
     "zod": "^4.3.6"
-  }
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willianstos/antigravity-zero.git"
+  },
+  "bugs": {
+    "url": "https://github.com/willianstos/antigravity-zero/issues"
+  },
+  "homepage": "https://github.com/willianstos/antigravity-zero#readme"
 }
