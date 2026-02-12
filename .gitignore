@@ -72,4 +72,7 @@ tmp/
 
 # --- [ PROJECT SPECIFIC ] ---
 config/*.bak
+venv*/
+.venv*/
 venv-hvac/
+venv-jarvis/
