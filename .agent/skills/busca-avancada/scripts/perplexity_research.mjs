@@ -1,4 +1,3 @@
-import { chromium } from 'playwright';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -22,101 +21,71 @@ if (!query) {
 const env = {};
 if (fs.existsSync(envPath)) {
     fs.readFileSync(envPath, 'utf8').split('\n').forEach(line => {
-        const [key, value] = line.split('=');
-        if (key && value) env[key.trim()] = value.trim();
+        const parts = line.split('=');
+        if (parts.length >= 2) {
+            const key = parts[0].trim();
+            const value = parts.slice(1).join('=').trim().replace(/^["'](.+)["']$/, '$1');
+            env[key] = value;
+        }
     });
 }
 
-const EMAIL = env.PERPLEXITY_EMAIL;
-const PASSWORD = env.PERPLEXITY_PASSWORD;
-const USER_DATA_DIR = path.join(process.env.HOME, 'pw-profiles/perplexity');
+const API_KEY = env.PERPLEXITY_API_KEY;
+
+if (!API_KEY || API_KEY === '{chave}') {
+    console.error('Error: PERPLEXITY_API_KEY not found or not set in .env');
+    process.exit(1);
+}
 
 async function run() {
-    console.log(`Starting Perplexity research from ${process.cwd()}`);
-    console.log(`Query: "${query}" (Deep: ${isDeep})`);
+    console.log(`🚀 Perplexity API Search: "${query}" (Deep: ${isDeep})`);
 
-    const context = await chromium.launchPersistentContext(USER_DATA_DIR, {
-        headless: true, // Run headless for skill automation
-        args: ['--disable-blink-features=AutomationControlled']
-    });
-
-    const page = await context.newPage();
-
+    const model = isDeep ? "sonar-reasoning-pro" : "sonar";
+    
     try {
-        console.log('Navigating to Perplexity...');
-        await page.goto('https://www.perplexity.ai/', { waitUntil: 'networkidle' });
+        const response = await fetch('https://api.perplexity.ai/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: model,
+                messages: [
+                    { role: 'system', content: 'Be precise and concise. Answer in Portuguese (PT-BR) as you are the technical assistant Jarvis.' },
+                    { role: 'user', content: query }
+                ],
+                temperature: 0.2,
+                top_p: 0.9,
+                return_images: false,
+                return_related_questions: false,
+                search_domain_filter: null,
+                intent_decrement_radius: 1,
+                stream: false
+            })
+        });
 
-        const timestamp = new Date().getTime();
-
-        // Check for login indicators instead of auto-filling
-        const emailInput = page.getByPlaceholder(/email/i);
-        const loginTrigger = page.getByRole('button', { name: /sign in|log in|continuar/i }).first();
-
-        const needsLogin = await emailInput.isVisible({ timeout: 5000 }).catch(() => false) ||
-            await loginTrigger.isVisible({ timeout: 2000 }).catch(() => false);
-
-        if (needsLogin) {
-            console.error('\n[!] ERRO DE AUTENTICAÇÃO: Sessão não detectada ou expirada.');
-            console.error('De acordo com as regras de segurança (H2 - Soberania), não automatizamos o login.');
-            console.error('Por favor, siga estas instruções para renovar sua sessão:');
-            console.error('1. Execute: npx playwright codegen --user-data-dir=$HOME/pw-profiles/perplexity https://www.perplexity.ai/');
-            console.error('2. Faça o login manualmente na janela que abrir.');
-            console.error('3. Feche o navegador e execute este comando novamente.\n');
-
-            await page.screenshot({ path: path.join(rootDir, `artifacts/auth-required-${timestamp}.png`) });
-            process.exit(1);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API Error: ${response.status} - ${errorText}`);
         }
 
-        await page.screenshot({ path: path.join(rootDir, `artifacts/debug-load-${timestamp}.png`) });
+        const data = await response.json();
+        const result = data.choices[0].message.content;
 
-        // Check for and close login modal if present
-        const closeBtn = page.locator('button:has(.fa-xmark), button:has-text("✕"), [aria-label="Close"]').first();
-        if (await closeBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-            console.log('Closing login modal...');
-            await closeBtn.click();
-            await page.waitForTimeout(1000);
-        }
-
-        // Check if we need to click a "Sign in" button first to see the form (though usually it's a modal)
-
-        // Perform Search
-        console.log('Searching for input field...');
-        const searchInput = page.locator('textarea, [contenteditable="true"], [placeholder*="Ask any"]').first();
-
-        if (!(await searchInput.isVisible({ timeout: 10000 }).catch(() => false))) {
-            console.log('Input field not visible. Taking error screenshot...');
-            await page.screenshot({ path: path.join(rootDir, `artifacts/debug-error-${timestamp}.png`) });
-        }
-
-        await searchInput.waitFor({ state: 'visible', timeout: 20000 });
-        await searchInput.fill(query);
-        await page.waitForTimeout(500);
-        await page.keyboard.press('Enter');
-        console.log('Query submitted. Waiting for response...');
-
-        // Wait for response text to start appearing
-        const responseLocator = page.locator('.prose, [class*="prose"]').first();
-        await responseLocator.waitFor({ state: 'visible', timeout: 30000 });
-
-        // Heuristic: wait for the sharing or feedback buttons which appear at the end
-        await page.waitForTimeout(15000);
-
-        // Extract result
-        const result = await responseLocator.innerText();
         console.log('\n--- RESEARCH RESULT ---\n');
         console.log(result);
         console.log('\n--- END OF RESULT ---\n');
 
-        const finalScreenshotPath = path.join(rootDir, `artifacts/perplexity-result-${timestamp}.png`);
-        await page.screenshot({ path: finalScreenshotPath, fullPage: true });
-        console.log(`Detailed screenshot saved to ${finalScreenshotPath}`);
+        // Save result metadata for artifacts if needed
+        const timestamp = new Date().getTime();
+        const resultPath = path.join(rootDir, `artifacts/perplexity-api-result-${timestamp}.json`);
+        fs.writeFileSync(resultPath, JSON.stringify(data, null, 2));
+        console.log(`Raw API response saved to ${resultPath}`);
 
     } catch (error) {
-        console.error('An error occurred during research:', error);
-        const errorTimestamp = new Date().getTime();
-        await page.screenshot({ path: path.join(rootDir, `artifacts/debug-exception-${errorTimestamp}.png`) });
-    } finally {
-        await context.close();
+        console.error('An error occurred during Perplexity API research:', error);
+        process.exit(1);
     }
 }
 
