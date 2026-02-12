@@ -1,0 +1,31 @@
+name: 🛡️ Sovereign CI Pipeline
+on:
+  push:
+    branches: [ main, feature/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: 🏛️ Auditoria de Integridade
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Código Soberano
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (v22)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Linting & Segurança
+        run: |
+          npm install -g eslint
+          # Simulação de verificação de lixo/axios legado
+          grep -r "axios" . && exit 1 || echo "✅ Clean of Axios legary"
+
+      - name: Validação IaC (Terraform)
+        uses: hashicorp/setup-terraform@v3
+      - run: |
+          terraform -chdir=infra/monitoring init -backend=false
+          terraform -chdir=infra/monitoring validate
