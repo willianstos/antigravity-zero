@@ -1,0 +1,25 @@
+#!/bin/bash
+# 🦅 Open Code Sovereign Wrapper (v12.0)
+# Carrega automaticamente as chaves do .env e executa o Open Code com identidade.
+
+# 1. Carregar variáveis de ambiente
+if [ -f .env ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
+
+# 2. Configurar identidade Git (se não estiver configurada)
+if [ -z "$(git config --global user.email)" ]; then
+    git config --global user.email "jarvis@antigravity.sov"
+    git config --global user.name "Jarvis Sovereign"
+fi
+
+# 3. Executar Open Code com os argumentos passados
+# Se nenhum argumento for passado, abre o modo interativo (TUI)
+echo "🦅 Iniciando Open Code (Sovereign Mode)..."
+echo "🔑 Keys carregadas: OpenAI, Perplexity, GitHub."
+
+if [ $# -eq 0 ]; then
+    /usr/bin/opencode
+else
+    /usr/bin/opencode "$@"
+fi
