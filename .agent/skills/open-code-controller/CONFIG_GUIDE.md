@@ -28,14 +28,22 @@ opencode models --refresh --verbose
 ```
 
 **Exemplo de Saída:**
-- `opencode/gpt-5-nano` (Rápido, Low Cost)
+- `opencode/gpt-5-nano` (Rapidíssimo, ideal para scripts simples)
 - `opencode/big-pickle` (Default, Balanced)
-- `opencode/trinity-large-preview-free` (Powerful)
+- `openai/gpt-5.2-codex` (Sovereign Choice: Melhor custo-benefício para código complexo)
+- `openai/gpt-5-nano` (Ultra-Low Cost: Para tarefas triviais)
 
 **Selecionar Modelo Específico:**
 Use a flag `-m` ou `--model` ao rodar comandos:
+
+**Para Código Complexo (Recomendado):**
 ```bash
-opencode run -m opencode/gpt-5-nano "Escreva um Hello World em Python"
+opencode run -m openai/gpt-5.2-codex "Crie uma API REST em Node.js com Swagger"
+```
+
+**Para Scripts Simples (Economia):**
+```bash
+opencode run -m openai/gpt-5-nano "Escreva um Hello World em Python"
 ```
 
 ## 3. Provedores Externos (BYOK)
