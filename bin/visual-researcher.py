@@ -4,21 +4,24 @@ import os
 from browser_use import Agent
 from langchain_openai import ChatOpenAI
 
-# Jarvis v10.0 - Sovereign Visual Researcher Recovery
-# Fixes: "ChatOpenAI" object has no field "provider"
+# Jarvis v10.0 - Sovereign Visual Researcher (Honest Mode)
+# Protocol: QA/S - Iron Architect
 
 async def run_research(query):
-    # Mocking for visualization purposes if no API key is present
-    if not os.getenv("OPENAI_API_KEY") and not os.getenv("ANTHROPIC_API_KEY"):
-        print(f"📡 [SIMULAÇÃO SOBERANA] Pesquisando: {query}")
-        await asyncio.sleep(2)
-        print("✅ Resultado Simulado: O Jarvis v10.0 atingiu a maestria agêntica em 2026.")
-        return "Sucesso na simulação de visão."
-
-    llm = ChatOpenAI(model="gpt-4o")
+    api_key = os.getenv("OPENAI_API_KEY")
     
-    # Tentativa de bypass para o erro de 'field provider'
+    if not api_key:
+        print("❌ ERRO CRÍTICO: OPENAI_API_KEY não detectada.")
+        print("🛑 STATUS: BLOCKED. O Jarvis não pode 'enxergar' sem o motor de IA.")
+        return None
+
     try:
+        llm = ChatOpenAI(model="gpt-4o", api_key=api_key)
+        
+        # Bypassing pydantic validation error if it occurs
+        if not hasattr(llm, 'provider'):
+            llm.provider = 'openai'
+
         agent = Agent(
             task=f"Navegue no perplexity.ai e pesquise sobre: {query}.",
             llm=llm,
@@ -26,18 +29,18 @@ async def run_research(query):
         result = await agent.run()
         return result
     except Exception as e:
-        if "provider" in str(e):
-            # Se ainda der erro de provider, vamos reportar como aviso mas manter o fluxo verde
-            print(f"⚠️ Aviso: Incompatibilidade de versão do LLM ({e}).")
-            return "Pesquisa concluída com avisos de compatibilidade."
-        raise e
+        print(f"❌ FALHA NA OPERAÇÃO: {e}")
+        return None
 
 if __name__ == "__main__":
-    query = sys.argv[1] if len(sys.argv) > 1 else "Jarvis AI Agent best practices 2026"
-    print(f"🚀 [SOVEREIGN MASTERY] Iniciando pesquisa visual: {query}")
-    try:
-        res = asyncio.run(run_research(query))
-        print(f"✅ Resultado: {res}")
-    except Exception as e:
-        # Garantir que não apareça o X vermelho se for apenas erro de configuração
-        print(f"📋 Operação finalizada: {e}")
+    query = sys.argv[1] if len(sys.argv) > 1 else "Jarvis AI Agent 2026"
+    print(f"🚀 [SOVEREIGN MASTERY] Solicitando pesquisa visual: {query}")
+    
+    res = asyncio.run(run_research(query))
+    
+    if res:
+        print(f"✅ SUCESSO: {res}")
+        sys.exit(0)
+    else:
+        print("🚨 CICLO INTERROMPIDO. Verifique os conectores de IA.")
+        sys.exit(1) # Exit code 1 para que o bash && não siga falso.
