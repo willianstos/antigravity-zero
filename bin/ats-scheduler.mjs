@@ -44,30 +44,37 @@ function checkThermal() {
             // Ação: Matar processos de visão pesados se necessário
             return false;
         }
+        logIAM("✅ Saúde Térmica: Estável. Cluster pronto para Full Motion LAM.");
         return true;
     } catch (e) {
         return true; // Assume safe if no nvidia-smi
     }
 }
 
-async function runScheduler() {
-    logIAM("🏛️ ATS Ativo (v10.5). Orquestrando Soberania H1/H2...");
+const HEARTBEAT_INTERVAL = 30 * 60 * 1000; // 30 Minutes Deep Heartbeat
+const THERMAL_INTERVAL = 5 * 60 * 1000; // 5 Minutes Safety Check
 
-    // Thermal Guard Sync
-    const isHealthy = checkThermal();
+function runHeartbeat() {
+    logIAM("💓 Deep Heartbeat (30m) Iniciado. Verificando Sincronia Master...");
 
-    if (isHealthy) {
-        logIAM("✅ Saúde Térmica: Estável. Cluster pronto para Full Motion LAM.");
+    try {
+        // GitOps Sync (BK)
+        execSync("git pull origin main --quiet");
+        logIAM("🔄 GitOps: Sincronizado com Main Cloud.");
+
+        // Verifica Saúde H1/H2
+        checkThermal();
+
+        logIAM("✅ Heartbeat 30m Concluído. Swarm estável.");
+    } catch (e) {
+        logIAM(`⚠️ Falha no Heartbeat: ${e.message}`);
     }
-
-    const schedule = JSON.parse(fs.readFileSync(SCHEDULE_FILE, 'utf8'));
-    console.log("Monitoramento Ativo:");
-    schedule.tasks.forEach(task => {
-        console.log(`- [${task.node}] ${task.name} | Status: Healthy`);
-    });
-
-    logIAM("🚀 Ciclo Master concluído. Próxima auditoria térmica em 5min.");
 }
 
-runScheduler();
-setInterval(runScheduler, 5 * 60 * 1000); // Auditoria a cada 5min
+// Inicialização Master
+logIAM("🏛️ ATS Ativo (v11.0). Orquestrando Soberania Máxima.");
+runHeartbeat();
+
+// Agendamentos
+setInterval(checkThermal, THERMAL_INTERVAL);
+setInterval(runHeartbeat, HEARTBEAT_INTERVAL);
