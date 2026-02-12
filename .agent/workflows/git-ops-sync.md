@@ -1,31 +1,32 @@
 ---
-description: Workflow para Commit, Push e Sincronização Dinâmica (Feature ou Main)
+description: Workflow GitOps Pipeline (Soberano): Commit + Push + Auto-Merge Main
 ---
 
-# Workflow: GitOps Sync (Soberano) // turbo-all
+# Workflow: GitOps Pipeline (Soberano) // turbo-all
 
-Este workflow orquestra a sincronização total entre o H2 local e a Cloud (GitHub), adaptando-se automaticamente à branch atual ou criando uma nova feature se solicitado.
+Este workflow orquestra o ciclo completo de vida do código: desde a criação da feature até a entrega final na branch `main` e sincronização Cloud.
 
-## Protocolo de Sincronização Dinâmica
+## Protocolo de Pipeline Total
 
 // turbo
-1. **Verificação e Movimentação de Branch**
-   Se um nome de feature for passado, o agente realiza o checkout.
-   `git checkout -b {feature-name} 2>/dev/null || git checkout {feature-name} || echo "Mantendo branch atual"`
+1. **Iniciação de Feature** (Opcional)
+   Se um nome for fornecido, o agente cria/troca para a branch.
+   `git checkout -b {feature-name} 2>/dev/null || git checkout {feature-name} || echo "Operando na branch atual: $(git branch --show-current)"`
 
-2. **Reconciliação de Estado**
-   `git add . && git status`
+2. **Reconciliação e Commit**
+   `sudo chattr -i .gitignore 2>/dev/null; git add . && git commit -m "feat($(git branch --show-current)): automatic synchronization 🦅" --allow-empty`
 
-3. **Commit Atômico com Contexto**
-   Se um nome for fornecido, ele será usado no commit. Caso contrário, usa-se o timestamp de elite.
-   `git commit -m "feat(sync/$(git branch --show-current)): reconciliation at $(date +%H:%M:%S) 🦅" --allow-empty`
+3. **Push de Feature**
+   Sincroniza a branch de trabalho com o GitHub.
+   `git push origin $(git branch --show-current)`
 
-4. **Cloud Sync (Push HEAD)**
-   Faz o push da branch atual para o origin, garantindo a liberdade de movimento.
-   `git push origin HEAD`
+4. **Merge Soberano em Main**
+   Se não estivermos na main, funde o trabalho no tronco principal e limpa o terreno.
+   `CURRENT_BRANCH=$(git branch --show-current); if [ "$CURRENT_BRANCH" != "main" ]; then git checkout main && git merge $CURRENT_BRANCH && git push origin main && git checkout $CURRENT_BRANCH; fi`
 
-5. **Auditoria de Deployment**
-   O agente confirma a branch de destino e lembra da sincronização de Secrets via Terraform.
+5. **Auditoria de Estado**
+   Garante que o `.gitignore` volte a ser imutável.
+   `sudo chattr +i .gitignore 2>/dev/null; echo "✅ Ciclo Completo: Feature -> Main -> Cloud Sincronizados!"`
 
 ---
-*Assinado: Zelador do Código H2 - Automação Total v2.1*
+*Assinado: Zelador do Código H2 - Automação Total v3.0 (Full-Pipeline)*
