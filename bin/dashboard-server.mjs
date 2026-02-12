@@ -9,12 +9,33 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const IAM_LOG = path.join(__dirname, '../artifacts/swarm-iam.jsonl');
 
+app.use(express.json({ limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'dashboard')));
+app.use('/artifacts', express.static(path.join(__dirname, '../artifacts')));
+
+let visionState = {
+    window: "Nenhum",
+    timestamp: new Date().toISOString(),
+    image: ""
+};
+
+app.post('/api/update-vision', (req, res) => {
+    visionState = {
+        window: req.body.window || "Nenhum",
+        timestamp: req.body.timestamp || new Date().toISOString(),
+        image: req.body.image || ""
+    };
+    res.json({ status: "ok" });
+});
+
+app.get('/api/vision', (req, res) => {
+    res.json(visionState);
+});
 
 app.get('/api/status', (req, res) => {
     try {
         if (!fs.existsSync(IAM_LOG)) return res.json({ tasks: [] });
-        
+
         const lines = fs.readFileSync(IAM_LOG, 'utf8').trim().split('\n');
         const tasks = {};
 
@@ -23,7 +44,7 @@ app.get('/api/status', (req, res) => {
             if (!tasks[entry.cardId]) {
                 tasks[entry.cardId] = { id: entry.cardId, status: "Thinking", lastUpdate: "", comments: [] };
             }
-            
+
             if (entry.message.includes("Iniciando")) tasks[entry.cardId].status = "Thinking";
             if (entry.message.includes("🛠️")) tasks[entry.cardId].status = "Building";
             if (entry.message.includes("🛡️")) tasks[entry.cardId].status = "Auditing";
@@ -34,7 +55,7 @@ app.get('/api/status', (req, res) => {
             tasks[entry.cardId].comments.push({ agent: entry.agent, msg: entry.message, time: entry.timestamp });
         });
 
-        res.json({ 
+        res.json({
             meta: {
                 ceo_goals: [
                     "Maximizar faturamento via Automação Agêntica",
@@ -42,7 +63,7 @@ app.get('/api/status', (req, res) => {
                     "Resposta zero-delay em suporte HVAC"
                 ]
             },
-            tasks: Object.values(tasks) 
+            tasks: Object.values(tasks)
         });
     } catch (e) {
         res.status(500).json({ error: e.message });

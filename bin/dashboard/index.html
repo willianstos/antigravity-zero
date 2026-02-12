@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
             --accent: #2ecc71;
             --text: #e0e0e0;
         }
+
         body {
             background: var(--bg);
             color: var(--text);
@@ -23,15 +25,23 @@
             flex-direction: column;
             align-items: center;
         }
+
         .container {
             width: 100%;
             max-width: 1000px;
         }
+
         header {
             margin-bottom: 3rem;
             text-align: center;
         }
-        h1 { font-weight: 300; letter-spacing: 2px; color: #fff; }
+
+        h1 {
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+
         .goals {
             background: var(--glass);
             backdrop-filter: blur(10px);
@@ -40,15 +50,35 @@
             border-radius: 12px;
             margin-bottom: 2rem;
         }
-        .goals h2 { font-size: 0.9rem; text-transform: uppercase; color: #888; margin-top: 0; }
-        .goals ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-        .goals li { font-size: 0.95rem; border-left: 2px solid var(--accent); padding-left: 10px; }
+
+        .goals h2 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #888;
+            margin-top: 0;
+        }
+
+        .goals ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .goals li {
+            font-size: 0.95rem;
+            border-left: 2px solid var(--accent);
+            padding-left: 10px;
+        }
 
         .swarm-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
         }
+
         .card {
             background: var(--glass);
             border: 1px solid var(--border);
@@ -56,8 +86,19 @@
             padding: 1.5rem;
             transition: transform 0.2s;
         }
-        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
         .status-badge {
             background: rgba(46, 204, 113, 0.2);
             color: var(--accent);
@@ -66,11 +107,26 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
-        .comments { font-size: 0.85rem; color: #aaa; }
-        .comment { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .agent-name { font-weight: 600; color: #fff; display: block; }
+
+        .comments {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .comment {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .agent-name {
+            font-weight: 600;
+            color: #fff;
+            display: block;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -83,6 +139,19 @@
             <ul id="ceo-goals"></ul>
         </section>
 
+        <section class="goals" style="text-align: center;">
+            <h2>👁️ LIVE VISION (OMNI CORTEX)</h2>
+            <div id="vision-container"
+                style="position: relative; overflow: hidden; border-radius: 8px; border: 2px solid var(--accent); max-width: 600px; margin: 0 auto;">
+                <img id="vision-frame" src=""
+                    style="width: 100%; display: block; filter: brightness(0.8) contrast(1.2);">
+                <div id="vision-overlay"
+                    style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 5px 10px; font-family: monospace; font-size: 0.8rem; color: var(--accent);">
+                    REC: <span id="vision-window">Nenhum</span>
+                </div>
+            </div>
+        </section>
+
         <section class="swarm-grid" id="swarm-grid"></section>
     </div>
 
@@ -91,7 +160,15 @@
             try {
                 const res = await fetch('/api/status');
                 const data = await res.json();
-                
+
+                // Update Vision
+                const visRes = await fetch('/api/vision');
+                const visData = await visRes.json();
+                if (visData.image) {
+                    document.getElementById('vision-frame').src = visData.image;
+                    document.getElementById('vision-window').innerText = visData.window;
+                }
+
                 // Update Goals
                 const goalsList = document.getElementById('ceo-goals');
                 goalsList.innerHTML = data.meta.ceo_goals.map(g => `<li>${g}</li>`).join('');
@@ -120,4 +197,5 @@
         update();
     </script>
 </body>
+
 </html>
