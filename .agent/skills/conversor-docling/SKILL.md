@@ -15,11 +15,10 @@ description: Conversão de PDF para Markdown de alta fidelidade usando IBM Docli
 
 ## Setup
 
-### 1. Instalar Docling
+### 1. Ambiente Virtual (Soberano H2)
+A instalação é feita isoladamente para não quebrar o sistema:
 ```bash
-pip install docling
-# Com OCR (para PDFs escaneados):
-pip install "docling[ocr]"
+/home/zappro/antigravity-zero/venv-hvac/bin/pip install docling
 ```
 
 ### 2. Verificar
@@ -74,6 +73,20 @@ for pdf in input_dir.glob("*.pdf"):
 | OCR built-in | ✅ (com flag) | ❌ | ❌ |
 | Markdown output | ✅ Nativo | ❌ | ❌ |
 
+## 🧠 Processamento Inteligente (Elite RAG)
+
+Após a conversão para Markdown, o Jarvis realiza a **Fase de Enriquecimento**:
+
+1.  **Análise de Defeitos:** O LLM varre o manual em busca de tabelas de erro e diagramas.
+2.  **FAQ de 200 Perguntas:** Gera as 200 principais dúvidas que técnicos de campo terão sobre o modelo, focando em:
+    - Causas de falhas em placas eletrônicas.
+    - Problemas de comunicação VRV/VRF.
+    - Previsão de falhas futuras baseada no desgaste de componentes específicos.
+
+### Script de Automação:
+O comando `/home/zappro/antigravity-zero/bin/hvac-intel.py` orquestra todo o ciclo:
+`PDF → MD → IA (200 Q&A) → Qdrant (domain-hvac)`
+
 ## Pipeline com Qdrant (RAG)
 
 ```
@@ -91,9 +104,9 @@ PDF → Docling → Markdown → Chunking → Embeddings → Qdrant
 ## Comandos para o Bot (Telegram)
 
 ```
-/pdf convert <URL>      → Baixar PDF e converter para MD
-/pdf batch <pasta>      → Converter todos PDFs da pasta
-/pdf index <arquivo>    → Converter e indexar no Qdrant
+/hvac ingest <caminho_pdf>   → Processamento Full-Auto (Docling + AI)
+/hvac faq <modelo>           → Recuperar as 200 Q&A do banco
+/hvac status                 → Ver saúde do pipeline de ingestão
 ```
 
 ## Diretórios
