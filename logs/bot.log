@@ -3,20 +3,8 @@ nohup: ignoring input
 > antigravity-zero@1.0.0-opus bot
 > node src/core/telegram-bot.js
 
-node:internal/modules/esm/resolve:274
-    throw new ERR_MODULE_NOT_FOUND(
-          ^
-
-Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/zappro/antigravity-zero/src/security/input-sanitizer.mjs' imported from /home/zappro/antigravity-zero/src/core/telegram-bot.js
-    at finalizeResolution (node:internal/modules/esm/resolve:274:11)
-    at moduleResolve (node:internal/modules/esm/resolve:859:10)
-    at defaultResolve (node:internal/modules/esm/resolve:983:11)
-    at #cachedDefaultResolve (node:internal/modules/esm/loader:731:20)
-    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)
-    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:310:38)
-    at ModuleJob._link (node:internal/modules/esm/module_job:182:49) {
-  code: 'ERR_MODULE_NOT_FOUND',
-  url: 'file:///home/zappro/antigravity-zero/src/security/input-sanitizer.mjs'
-}
-
-Node.js v22.22.0
+[dotenv@17.2.4] injecting env (16) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+🦞 [BRIDGE] Loaded 17 memos: .openclaw.rules, agents, automations, bootstrap, heartbeat, identity, infra, overview, persona, readme, roadmap, rules, soul, sovereign, system, tools, user
+🦞 [OPENCLAW] Iniciando Controlador Jarvis...
+📝 [OPENCLAW] Carregados 17 memos de .context/
+🧠 [OPENCLAW] Contexto do sistema: 4677 caracteres

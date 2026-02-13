@@ -11,10 +11,10 @@ import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { OpenClawBridge } from './openclaw-bridge.mjs';
-import { sanitize } from '../security/input-sanitizer.mjs';
+import { sanitize } from '../jarvis/security/input-sanitizer.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, '..', '..', '..');
+const ROOT = join(__dirname, '..', '..');
 
 // Load env
 const envPath = join(ROOT, '.env');

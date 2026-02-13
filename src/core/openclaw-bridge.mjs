@@ -9,11 +9,11 @@
 import { readFileSync, existsSync, readdirSync, lstatSync } from 'fs';
 import { join, dirname, basename } from 'path';
 import { fileURLToPath } from 'url';
-import contextManager from '../memory/context-manager.mjs';
+import contextManager from '../jarvis/memory/context-manager.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// ROOT = antigravity-zero/ (3 levels up from src/jarvis/bridge/)
-const ROOT = join(__dirname, '..', '..', '..');
+// ROOT = antigravity-zero/ (2 levels up from src/core/)
+const ROOT = join(__dirname, '..', '..');
 const CONTEXT_DIR = join(ROOT, '.context');
 const JARVIS_API = process.env.JARVIS_API || 'http://localhost:7777';
 

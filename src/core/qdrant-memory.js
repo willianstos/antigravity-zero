@@ -8,7 +8,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: join(__dirname, '..', '..', '..', '.env') });
+dotenv.config({ path: join(__dirname, '..', '..', '.env') });
 
 const QDRANT_URL = process.env.QDRANT_URL || 'http://localhost:6333';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
