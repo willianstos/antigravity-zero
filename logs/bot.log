@@ -3,7 +3,7 @@ nohup: ignoring input
 > antigravity-zero@1.0.0-opus bot
 > node src/core/telegram-bot.js
 
-[dotenv@17.2.4] injecting env (16) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.2.4] injecting env (16) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
 🦞 [BRIDGE] Loaded 17 memos: .openclaw.rules, agents, automations, bootstrap, heartbeat, identity, infra, overview, persona, readme, roadmap, rules, soul, sovereign, system, tools, user
 🦞 [OPENCLAW] Iniciando Controlador Jarvis...
 📝 [OPENCLAW] Carregados 17 memos de .context/
