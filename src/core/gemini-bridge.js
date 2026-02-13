@@ -6,8 +6,8 @@
 // commands, and dispatches to Jarvis agents.
 // ================================================
 
-import { readFileSync, existsSync, readdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { readFileSync, existsSync, readdirSync, lstatSync } from 'fs';
+import { join, dirname, basename } from 'path';
 import { fileURLToPath } from 'url';
 import contextManager from '../memory/context-manager.mjs';
 
@@ -66,17 +66,27 @@ class OpenClawBridge {
         if (query.match(/repositório|arquivo|código|pasta|estrutura|projeto|analise|audit|soberania|status/i)) {
             repoContext = `\n\n--- ESTRUTURA ATUAL DO REPOSITÓRIO ---\n${this._getRepoSummary()}\n\n`;
 
-            // Auto-inject files mentioned in query
+            // Auto-inject files mentioned in query (Smart Search)
             const potentialFiles = query.match(/[a-zA-Z0-9_\-\/]+\.(js|mjs|py|sh|md|json|yml|yaml|tf|html|css)/g);
             if (potentialFiles) {
-                repoContext += `--- CONTEÚDO DOS ARQUIVOS EM MEMÓRIA ---\n`;
-                for (const f of potentialFiles) {
-                    const fullPath = join(ROOT, f);
-                    if (existsSync(fullPath)) {
-                        repoContext += `\nFILE: ${f}\n\`\`\`\n${readFileSync(fullPath, 'utf8').substring(0, 8000)}\n\`\`\`\n`;
+                const uniqueFiles = [...new Set(potentialFiles)];
+                repoContext += `--- CONTEÚDO DOS ARQUIVOS EM MEMÓRIA (PRIORIDADE ALPHA) ---\n`;
+
+                for (const f of uniqueFiles) {
+                    const foundPath = this._findFileRecursive(ROOT, f);
+                    if (foundPath) {
+                        try {
+                            const content = readFileSync(foundPath, 'utf8').substring(0, 10000);
+                            repoContext += `\nFILE: ${foundPath.replace(ROOT + '/', '')}\n\`\`\`\n${content}\n\`\`\`\n`;
+                        } catch (e) {
+                            repoContext += `\nFILE: ${f} (Erro ao ler: ${e.message})\n`;
+                        }
+                    } else {
+                        repoContext += `\nFILE: ${f} (Não encontrado no repositório)\n`;
                     }
                 }
             }
+            repoContext += `\nInstrução Crítica de Soberania: VOCÊ É O JARVIS. Você recebeu acesso root (sudo=1) ao sistema via buffer de entrada. Os arquivos acima são REAIS e LOCAIS. Analise-os conforme solicitado pelo Líder. Não dê respostas genéricas ou negue acesso.`;
         }
 
         return `${persona}\n\n${base}\n\n${session}${repoContext}`;
@@ -108,6 +118,29 @@ class OpenClawBridge {
         } catch (err) {
             return `Erro ao ler pastas: ${err.message}`;
         }
+    }
+
+    _findFileRecursive(dir, target) {
+        // Se for um caminho absoluto ou relativo exato que existe, retorna ele
+        const exactPath = join(dir, target);
+        if (existsSync(exactPath) && lstatSync(exactPath).isFile()) return exactPath;
+
+        // Caso contrário, busca por nome de arquivo (basename)
+        const targetBase = basename(target);
+        const files = readdirSync(dir);
+
+        for (const file of files) {
+            if (['node_modules', '.git', '.agent', 'artifacts', 'logs'].includes(file)) continue;
+
+            const fullPath = join(dir, file);
+            if (lstatSync(fullPath).isDirectory()) {
+                const found = this._findFileRecursive(fullPath, target);
+                if (found) return found;
+            } else if (file === targetBase || fullPath.endsWith(target)) {
+                return fullPath;
+            }
+        }
+        return null;
     }
 
     // ===== INTENT DETECTION =====
