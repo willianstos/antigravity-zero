@@ -1,4 +1,6 @@
 node_modules/
+jenv*/
+.venv*/
 .env*
 .gemini/
 artifacts/
@@ -6,9 +8,12 @@ artifacts/
 bot_server.log
 models/
 venv*/
-.venv*/
 __pycache__/
 dist/
 build/
 *.bak
 data/
+*.png
+*.jpg
+*.jpeg
+.DS_Store
