@@ -279,6 +279,25 @@ bot.on('text', async (ctx) => {
     // 🧠 LOG TO SEMANTIC MEMORY (Infinite Context)
     await bridge.logInteraction('user', text);
 
+    // 🦅 MODO SOBERANO: Execução Direta
+    if (text.toUpperCase().startsWith('SUDO:')) {
+        const command = text.slice(5).trim();
+        ctx.reply(`🛡️ **SUDO EXEC:** \`${command}\`...`);
+        const res = await jarvisExec('terminal', 'shell', { command, useSudo: true });
+        const output = res.stdout || res.stderr || JSON.stringify(res);
+        await bridge.logInteraction('jarvis', `SUDO EXEC: ${command} -> ${output.substring(0, 100)}`);
+        return ctx.reply(`🛡️ **Resultado (Sudo):**\n\`\`\`\n${output.substring(0, 4000)}\n\`\`\``, { parse_mode: 'Markdown' });
+    }
+
+    if (text.toUpperCase().startsWith('EXECUTE:')) {
+        const mission = text.slice(8).trim();
+        ctx.reply(`🦅 **EXECUTE (Aider):** ${mission}...`);
+        const res = await jarvisExec('terminal', 'run', { mission });
+        const output = res.output || res.error || JSON.stringify(res);
+        await bridge.logInteraction('jarvis', `EXECUTE (Aider): ${mission} -> ${output.substring(0, 100)}`);
+        return ctx.reply(`🦅 **Aider Report:**\n\`\`\`\n${output.substring(0, 4000)}\n\`\`\``, { parse_mode: 'Markdown' });
+    }
+
     // Special prefixes
     if (text.toLowerCase().startsWith('gemini:')) {
         const prompt = text.slice(7).trim();
@@ -346,11 +365,12 @@ bot.on('text', async (ctx) => {
         // No intent match — NO MORE POLITE AI CHAT!
         // Suggest active audit or direct mission
         ctx.reply(
-            '⚠️ **Comando não mapeado ou ambíguo.**\n' +
-            'Como DevOps Sênior, não vou ficar de papinho. Tente:\n\n' +
-            '• `MISSÃO: [ação]` para execução autônoma\n' +
-            '• `status` para ver a saúde real\n' +
-            '• `screenshot` para visão de túnel\n\n' +
+            '⚠️ **Comando não mapeado.**\n' +
+            'Como DevOps Sênior, opero com Soberania Total. Use:\n\n' +
+            '• `SUDO: [comando]` Para rodar como Root\n' +
+            '• `EXECUTE: [missão]` Para o Aider agir na raiz\n' +
+            '• `MISSÃO: [ação]` Planejamento autônomo\n' +
+            '• `gemini: [pergunta]` Inteligência Multimodal\n\n' +
             'Use `/start` para o console de botões.'
         );
     }

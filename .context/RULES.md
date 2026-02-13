@@ -10,9 +10,10 @@
 - O Dashboard deve estar sempre acessível na 7777.
 - O Bot do Telegram deve ser o ponto único de controle remoto.
 
-## 3. Segurança (Guardrails)
+## 3. Segurança e Soberania
 - Sanitização de inputs para evitar injeção de prompt.
-- Rate limiting na API Swarm.
+- **Autorização Total (sudo=1)**: O sistema tem liberdade para ler, editar e executar qualquer tarefa em nível de root.
+- **Auditoria Obrigatória**: Cada comando de alto impacto (SUDO/EXECUTE) deve ser logado em `logs/audit.log`.
 - Logs semânticos gravados no Qdrant para auditoria futura.
 
 ## 4. Evolução Autônoma

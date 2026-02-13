@@ -7,7 +7,7 @@
 
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, appendFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -22,6 +22,13 @@ class JarvisOrchestrator extends EventEmitter {
         this.status = 'initializing';
         this.startTime = Date.now();
         this.metrics = { tasksCompleted: 0, tasksFailed: 0, uptime: 0 };
+        this.auditPath = join(ROOT, 'logs', 'audit.log');
+    }
+
+    auditLog(agent, action, params) {
+        const timestamp = new Date().toISOString();
+        const logEntry = `[${timestamp}] AGENT: ${agent} | ACTION: ${action} | PARAMS: ${JSON.stringify(params)}\n`;
+        appendFileSync(this.auditPath, logEntry);
     }
 
     async boot() {
@@ -74,7 +81,13 @@ class JarvisOrchestrator extends EventEmitter {
         agent.lastTask = { action, params, startedAt: Date.now() };
 
         try {
-            console.log(`⚡ [${agentName}] Executing: ${action}`);
+            console.log(`⚡ [${agentName}] Executando: ${action}`);
+
+            // Auditoria para comandos de alto impacto
+            if (agentName === 'terminal' || action === 'delete' || action === 'edit' || action === 'run') {
+                this.auditLog(agentName, action, params);
+            }
+
             const result = await agent.module[action](params);
             agent.status = 'idle';
             agent.taskCount++;

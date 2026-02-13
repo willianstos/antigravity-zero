@@ -1,102 +1,77 @@
-#!/usr/bin/env node
-// ================================================
-// 🖥️ AIDER BRIDGE — AI Pair Programming Controller
-// Wraps AIDER CLI for autonomous code editing
-// ================================================
+import { spawnSync, spawn } from 'child_process';
+import { existsSync } from 'fs';
 
-import { spawn, execSync } from 'child_process';
-import { EventEmitter } from 'events';
+/**
+ * 🤖 AIDER BRIDGE — DevOps Senior Terminal Interface
+ * Uses AIDER AI Agent for code editing and system control.
+ */
+export default {
+    /**
+     * Executes a raw shell command.
+     * @param {string} command - The command to run.
+     * @param {boolean} useSudo - Whether to prepend sudo.
+     */
+    async shell({ command, useSudo = false }) {
+        const finalCommand = useSudo ? `sudo ${command}` : command;
+        console.log(`💻 [TERMINAL] Exutando: ${finalCommand}`);
 
-class AiderBridge extends EventEmitter {
-    constructor(opts = {}) {
-        super();
-        this.workDir = opts.workDir || process.cwd();
-        this.model = opts.model || 'openrouter/google/gemini-2.0-flash-001';
-        this.process = null;
-    }
+        const result = spawnSync('bash', ['-c', finalCommand], {
+            encoding: 'utf8',
+            maxBuffer: 1024 * 1024 * 50 // 50MB buffer
+        });
 
-    // Check if AIDER is installed
-    async check() {
-        try {
-            const version = execSync('aider --version 2>&1', { encoding: 'utf8' }).trim();
-            return { installed: true, version };
-        } catch {
-            return { installed: false, version: null };
+        if (result.status !== 0) {
+            return {
+                success: false,
+                stdout: result.stdout,
+                stderr: result.stderr,
+                error: `Exit code ${result.status}`
+            };
         }
-    }
 
-    // Execute a code edit task via AIDER
-    async edit({ file, instruction, autoCommit = false }) {
-        return new Promise((resolve, reject) => {
-            const args = [
-                '--yes-always',
-                '--no-auto-lint',
-                '--message', instruction,
-                file
-            ];
+        return {
+            success: true,
+            stdout: result.stdout,
+            stderr: result.stderr
+        };
+    },
 
-            if (!autoCommit) args.push('--no-auto-commits');
+    /**
+     * Uses AIDER to perform complex code changes or system tasks.
+     * @param {string} mission - The mission description for Aider.
+     * @param {string[]} files - Optional list of files to give to Aider.
+     */
+    async run({ mission, files = [] }) {
+        console.log(`🧠 [AIDER] Iniciando missão: ${mission}`);
 
-            const proc = spawn('aider', args, {
-                cwd: this.workDir,
-                stdio: ['pipe', 'pipe', 'pipe'],
-                env: { ...process.env }
-            });
+        // Build arguments
+        const args = [
+            '--message', mission,
+            '--no-git', // Use repo's git but don't let aider auto-commit if preferred (or omit this)
+            '--yes-always'
+        ];
 
-            let stdout = '';
-            let stderr = '';
-
-            proc.stdout.on('data', d => { stdout += d.toString(); });
-            proc.stderr.on('data', d => { stderr += d.toString(); });
-
-            proc.on('close', code => {
-                if (code === 0) {
-                    resolve({ success: true, output: stdout, file });
-                } else {
-                    reject(new Error(`AIDER exit ${code}: ${stderr}`));
-                }
-            });
-
-            // Timeout 120s
-            setTimeout(() => {
-                proc.kill('SIGTERM');
-                reject(new Error('AIDER timeout (120s)'));
-            }, 120000);
+        // Add specific files if provided
+        files.forEach(f => {
+            if (existsSync(f)) args.push(f);
         });
-    }
 
-    // Execute arbitrary shell command safely
-    async shell({ command, timeout = 30000 }) {
-        return new Promise((resolve, reject) => {
-            const proc = spawn('bash', ['-c', command], {
-                cwd: this.workDir,
-                stdio: ['pipe', 'pipe', 'pipe'],
-                timeout
-            });
-
-            let stdout = '';
-            let stderr = '';
-
-            proc.stdout.on('data', d => { stdout += d.toString(); });
-            proc.stderr.on('data', d => { stderr += d.toString(); });
-
-            proc.on('close', code => {
-                resolve({
-                    success: code === 0,
-                    exitCode: code,
-                    stdout: stdout.trim(),
-                    stderr: stderr.trim()
-                });
-            });
-
-            proc.on('error', reject);
+        const proc = spawnSync('aider', args, {
+            encoding: 'utf8',
+            env: { ...process.env, AIDER_QUIET: '1' }
         });
-    }
-}
 
-// Export as agent interface
-const bridge = new AiderBridge();
-export default bridge;
-export const edit = (params) => bridge.edit(params);
-export const shell = (params) => bridge.shell(params);
-export const check = () => bridge.check();
+        return {
+            success: proc.status === 0,
+            output: proc.stdout,
+            error: proc.stderr
+        };
+    },
+
+    /**
+     * Legacy support for basic command execution
+     */
+    async execute({ command }) {
+        return this.shell({ command });
+    }
+};
