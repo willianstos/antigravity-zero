@@ -42,7 +42,8 @@ class OpenClawBridge {
         const system = this.memos['system'] || '';
         const agents = this.memos['agents'] || '';
         const rules = this.memos['rules'] || '';
-        return `${system}\n\n${agents}\n\n${rules}`;
+        const sovereign = this.memos['sovereign'] || '';
+        return `${sovereign}\n\n${system}\n\n${agents}\n\n${rules}`;
     }
 
     // Get specific memo
@@ -62,22 +63,20 @@ class OpenClawBridge {
         const session = await contextManager.getFullContext(query);
 
         let repoContext = '';
-        if (query.match(/repositório|arquivo|código|pasta|estrutura|projeto|analise|audit/i)) {
+        if (query.match(/repositório|arquivo|código|pasta|estrutura|projeto|analise|audit|soberania|status/i)) {
             repoContext = `\n\n--- ESTRUTURA ATUAL DO REPOSITÓRIO ---\n${this._getRepoSummary()}\n\n`;
 
             // Auto-inject files mentioned in query
-            const potentialFiles = query.match(/[a-zA-Z0-9_\-\/]+\.(js|mjs|py|sh|md|json|yml|yaml|tf)/g);
+            const potentialFiles = query.match(/[a-zA-Z0-9_\-\/]+\.(js|mjs|py|sh|md|json|yml|yaml|tf|html|css)/g);
             if (potentialFiles) {
-                repoContext += `--- CONTEÚDO DOS ARQUIVOS CITADOS ---\n`;
+                repoContext += `--- CONTEÚDO DOS ARQUIVOS EM MEMÓRIA ---\n`;
                 for (const f of potentialFiles) {
-                    const fullPath = join(ROOT, f.startsWith('/') ? f : f);
+                    const fullPath = join(ROOT, f);
                     if (existsSync(fullPath)) {
-                        repoContext += `\nFILE: ${f}\n\`\`\`\n${readFileSync(fullPath, 'utf8').substring(0, 5000)}\n\`\`\`\n`;
+                        repoContext += `\nFILE: ${f}\n\`\`\`\n${readFileSync(fullPath, 'utf8').substring(0, 8000)}\n\`\`\`\n`;
                     }
                 }
             }
-
-            repoContext += `\nInstrução Crítica: Você é o JARVIS (DevOps Sênior) e tem permissão total (SUDO=1). Se precisar de mais arquivos, peça ao Líder usando o prefixo 'SUDO: cat [caminho]' ou use o AIDER via 'EXECUTE: [missão]'. Não dê desculpas de falta de acesso.`;
         }
 
         return `${persona}\n\n${base}\n\n${session}${repoContext}`;

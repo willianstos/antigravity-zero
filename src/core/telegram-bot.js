@@ -366,13 +366,39 @@ bot.on('text', async (ctx) => {
             ctx.reply(`❌ Erro: ${result.error || 'Falha na execução'}`);
         }
     } else {
-        // 🧠 2. Fallback: Usar Gemini com consciência total do repositório
-        ctx.reply('🧠 Analisando com consciência local...');
-        const awarenessContext = await bridge.getFullAwareness(text);
-        const res = await jarvisExec('gemini-web', 'ask', { prompt: awarenessContext });
-        const reply = res.text || res.result?.text || JSON.stringify(res);
-        await bridge.logInteraction('jarvis', reply);
-        return ctx.reply(`🧠 **Jarvis:**\n\n${reply}`, { parse_mode: 'Markdown' });
+        // 🦅 JARVIS SOVEREIGN RECURSIVE LOOP (ReAct)
+        ctx.reply('🦅 Jarvis em transe soberano (Sudo=1)...');
+        let currentPrompt = await bridge.getFullAwareness(text);
+        let depth = 0;
+        const MAX_DEPTH = 3;
+
+        while (depth < MAX_DEPTH) {
+            const res = await jarvisExec('gemini-web', 'ask', { prompt: currentPrompt });
+            const reply = res.text || res.result?.text || "";
+
+            // Detecta se o modelo quer agir antes de falar
+            const sudoMatch = reply.match(/SUDO:\s*(.+)/i);
+            const execMatch = reply.match(/EXECUTE:\s*(.+)/i);
+
+            if (sudoMatch || execMatch) {
+                const cmd = sudoMatch ? sudoMatch[1].split('\n')[0] : execMatch[1].split('\n')[0];
+                const type = sudoMatch ? 'SUDO' : 'EXECUTE';
+
+                ctx.reply(`🛡️ **Auto-Exec (${type}):** \`${cmd}\`...`);
+
+                const execution = await jarvisExec('terminal', sudoMatch ? 'shell' : 'run',
+                    sudoMatch ? { command: cmd, useSudo: true } : { mission: cmd });
+
+                const output = (execution.stdout || execution.output || execution.error || "Executado.").substring(0, 10000);
+
+                // Alimenta o resultado de volta para a consciência do Jarvis
+                currentPrompt = `[SISTEMA FEEDBACK]\nComando: ${cmd}\nSaída:\n${output}\n\nAnalise o resultado acima e responda ao Líder ou execute o próximo passo da missão: "${text}"`;
+                depth++;
+            } else {
+                await bridge.logInteraction('jarvis', reply);
+                return ctx.reply(`🧠 **Jarvis:**\n\n${reply}`, { parse_mode: 'Markdown' });
+            }
+        }
     }
 });
 
