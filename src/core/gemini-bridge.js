@@ -63,7 +63,21 @@ class OpenClawBridge {
 
         let repoContext = '';
         if (query.match(/repositório|arquivo|código|pasta|estrutura|projeto|analise|audit/i)) {
-            repoContext = `\n\n--- ESTRUTURA ATUAL DO REPOSITÓRIO ---\n${this._getRepoSummary()}\n\nInstrução Crítica: Você tem permissão total (SUDO=1). Se precisar analisar o conteúdo de um arquivo citado acima, execute um comando shell via Jarvis (ex: SUDO: cat path/to/file) para obter o conteúdo real antes de responder. Não dê respostas genéricas.`;
+            repoContext = `\n\n--- ESTRUTURA ATUAL DO REPOSITÓRIO ---\n${this._getRepoSummary()}\n\n`;
+
+            // Auto-inject files mentioned in query
+            const potentialFiles = query.match(/[a-zA-Z0-9_\-\/]+\.(js|mjs|py|sh|md|json|yml|yaml|tf)/g);
+            if (potentialFiles) {
+                repoContext += `--- CONTEÚDO DOS ARQUIVOS CITADOS ---\n`;
+                for (const f of potentialFiles) {
+                    const fullPath = join(ROOT, f.startsWith('/') ? f : f);
+                    if (existsSync(fullPath)) {
+                        repoContext += `\nFILE: ${f}\n\`\`\`\n${readFileSync(fullPath, 'utf8').substring(0, 5000)}\n\`\`\`\n`;
+                    }
+                }
+            }
+
+            repoContext += `\nInstrução Crítica: Você é o JARVIS (DevOps Sênior) e tem permissão total (SUDO=1). Se precisar de mais arquivos, peça ao Líder usando o prefixo 'SUDO: cat [caminho]' ou use o AIDER via 'EXECUTE: [missão]'. Não dê desculpas de falta de acesso.`;
         }
 
         return `${persona}\n\n${base}\n\n${session}${repoContext}`;
