@@ -1,0 +1,59 @@
+{
+    "phase": "PH-09-RAG-DASHBOARD",
+    "status": "pending",
+    "tasks": [
+        {
+            "id": "09-01",
+            "title": "Setup Next.js & Shadcn/UI (Ethical Theme)",
+            "description": "Criar frontend/dashboard e instalar dependências essenciais (next, typescript, tailwind, shadcn, tremor, lucide).",
+            "command": "npx create-next-app@latest frontend/dashboard --typescript --tailwind && cd frontend/dashboard && npx shadcn-ui@latest init && npm install @tremor/react lucide-react @tanstack/react-query @tanstack/react-table",
+            "status": "pending",
+            "type": "run_command"
+        },
+        {
+            "id": "09-02",
+            "title": "Backend Integration (Route Handlers)",
+            "description": "Criar API Routes seguindo skill next-perf-engineer (Zod validation, Error handling).",
+            "command": "",
+            "status": "pending",
+            "type": "file_create",
+            "path": "frontend/dashboard/app/api/route.ts"
+        },
+        {
+            "id": "09-03",
+            "title": "Layout Architecture (Screaming)",
+            "description": "Aplicar skill frontend-architect.md para criar estrutura de pastas correta e Layout Base.",
+            "command": "",
+            "status": "pending",
+            "type": "file_create",
+            "path": "frontend/dashboard/components/shared/layout.tsx"
+        },
+        {
+            "id": "09-04",
+            "title": "Command Center (Tremor)",
+            "description": "Implementar Dashboard Charts usando skill tremor-analyst.md.",
+            "command": "",
+            "status": "pending",
+            "type": "file_create",
+            "path": "frontend/dashboard/app/page.tsx"
+        },
+        {
+            "id": "09-05",
+            "title": "Ingestion UI (Radix)",
+            "description": "Criar UI de Ingestão usando componentes shadcn-craftsman.md.",
+            "command": "",
+            "status": "pending",
+            "type": "file_create",
+            "path": "frontend/dashboard/app/ingest/page.tsx"
+        },
+        {
+            "id": "09-06",
+            "title": "Audit Table (TanStack)",
+            "description": "Implementar Data Grid poderoso usando skill tanstack-master.md.",
+            "command": "",
+            "status": "pending",
+            "type": "file_create",
+            "path": "frontend/dashboard/app/audit/page.tsx"
+        }
+    ]
+}

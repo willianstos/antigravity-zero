@@ -1,0 +1,28 @@
+{
+    "phase": "022-master-sovereign-ph-max",
+    "status": "in-progress",
+    "current_task": "task-001-telegram-bridge",
+    "tasks": [
+        {
+            "id": "task-001-telegram-bridge",
+            "description": "Implementar mcp-telegram-bridge.mjs",
+            "status": "pending"
+        },
+        {
+            "id": "task-002-config-local-h1",
+            "description": "Configurar .env para processamento local H1 (4090)",
+            "status": "pending"
+        },
+        {
+            "id": "task-003-constitution-merge",
+            "description": "Atualizar Constituição para v10.5 Master PH-MAX",
+            "status": "pending"
+        },
+        {
+            "id": "task-004-janitor-schedule",
+            "description": "Programar Janitor para ciclos de 4 horas",
+            "status": "pending"
+        }
+    ],
+    "summary": "Iniciando a unificação Master Protocol PH-MAX. Migração para H1 local e ponte Telegram ativa."
+}

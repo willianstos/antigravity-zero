@@ -1,0 +1,86 @@
+{
+    "phase": "PH-06-PDF-SCRAPER-ELITE",
+    "status": "done",
+    "current_task": null,
+    "completed_at": "2026-02-11T06:04:06-03:00",
+    "tasks": [
+        {
+            "id": "6A-1",
+            "group": "CONFIGURACAO",
+            "title": "Validar instalação do Playwright CLI",
+            "status": "done"
+        },
+        {
+            "id": "6A-2",
+            "group": "CONFIGURACAO",
+            "title": "Configurar credenciais da Firecrawl API no .env",
+            "status": "done"
+        },
+        {
+            "id": "6A-3",
+            "group": "CONFIGURACAO",
+            "title": "Criar diretório de artefatos: artifacts/pdfs/",
+            "status": "done"
+        },
+        {
+            "id": "6A-4",
+            "group": "CONFIGURACAO",
+            "title": "Testar conexão com Firecrawl API (health check)",
+            "status": "done"
+        },
+        {
+            "id": "6B-1",
+            "group": "CORE_SCRAPER",
+            "title": "Criar script tools/pdf-scraper.mjs com lógica de descoberta",
+            "status": "done"
+        },
+        {
+            "id": "6B-2",
+            "group": "CORE_SCRAPER",
+            "title": "Implementar função discoverPDFs(url) usando Playwright",
+            "status": "done"
+        },
+        {
+            "id": "6B-3",
+            "group": "CORE_SCRAPER",
+            "title": "Implementar função extractPDFWithFirecrawl(pdfUrl)",
+            "status": "done"
+        },
+        {
+            "id": "6B-4",
+            "group": "CORE_SCRAPER",
+            "title": "Implementar fallback downloadPDFWithPlaywright(pdfUrl)",
+            "status": "done"
+        },
+        {
+            "id": "6C-1",
+            "group": "VALIDACAO",
+            "title": "Testar extração de PDF público (ex: whitepaper da OpenAI)",
+            "status": "done"
+        },
+        {
+            "id": "6D-1",
+            "group": "INTEGRACAO_OPENCLAW",
+            "title": "Criar comando Telegram /scrape [URL]",
+            "status": "done"
+        },
+        {
+            "id": "6D-2",
+            "group": "INTEGRACAO_OPENCLAW",
+            "title": "Configurar resposta via Telegram com resumo do PDF",
+            "status": "done"
+        },
+        {
+            "id": "6D-4",
+            "group": "INTEGRACAO_OPENCLAW",
+            "title": "Implementar cache de PDFs processados",
+            "status": "done"
+        },
+        {
+            "id": "6E-3",
+            "group": "OTIMIZACAO",
+            "title": "Gerar logs estruturados em artifacts/logs/pdf-scraper.log",
+            "status": "done"
+        }
+    ]
+}

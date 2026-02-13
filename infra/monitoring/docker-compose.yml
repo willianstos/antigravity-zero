@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  localstack:
+    container_name: localstack_refrimix
+    image: localstack/localstack:latest
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # range for services
+    environment:
+      - SERVICES=s3,cloudwatch,sns,sqs
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./localstack_data:/var/lib/localstack"
+
+  grafana:
+    container_name: grafana_refrimix
+    image: grafana/grafana:latest
+    ports:
+      - "127.0.0.1:3001:3000" # Porta 3001 p/ não conflitar com Dashboard Jarvis
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-aws-sdk
+    depends_on:
+      - localstack
+    volumes:
+      - ./grafana_data:/var/lib/grafana

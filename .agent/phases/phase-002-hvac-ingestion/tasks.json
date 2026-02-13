@@ -1,0 +1,36 @@
+{
+    "phase": "002-hvac-ingestion",
+    "status": "in-progress",
+    "current_task": "task-001-mapping-urls",
+    "tasks": [
+        {
+            "id": "task-001-mapping-urls",
+            "description": "Mapear URLs oficiais de suporte técnico",
+            "status": "pending"
+        },
+        {
+            "id": "task-002-setup-dirs",
+            "description": "Configurar diretório /data/manuals/ com permissões",
+            "status": "pending"
+        },
+        {
+            "id": "task-003-hvac-scout",
+            "description": "Implementar Script de Download Playwright",
+            "status": "pending"
+        },
+        {
+            "id": "task-004-docling-cuda",
+            "description": "Configurar Docling com suporte a GPU 3060",
+            "status": "pending"
+        },
+        {
+            "id": "task-005-hvac-ingestor",
+            "description": "Desenvolver Pipeline de Tradução e Ingestão",
+            "status": "pending"
+        }
+    ],
+    "gpu_stats": {
+        "device": "RTX 3060",
+        "last_check": null
+    }
+}

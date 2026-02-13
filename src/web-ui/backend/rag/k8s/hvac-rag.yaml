@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: qdrant
+  namespace: rag-hvac
+spec:
+  serviceName: qdrant
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qdrant
+  template:
+    metadata:
+      labels:
+        app: qdrant
+    spec:
+      containers:
+      - name: qdrant
+        image: qdrant/qdrant:latest
+        ports:
+        - containerPort: 6333
+          name: http
+        - containerPort: 6334
+          name: grpc
+        volumeMounts:
+        - name: qdrant-storage
+          mountPath: /qdrant/storage
+  volumeClaimTemplates:
+  - metadata:
+      name: qdrant-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qdrant
+  namespace: rag-hvac
+spec:
+  selector:
+    app: qdrant
+  ports:
+  - name: http
+    port: 6333
+    targetPort: 6333
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hvac-api
+  namespace: rag-hvac
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hvac-api
+  template:
+    metadata:
+      labels:
+        app: hvac-api
+    spec:
+      containers:
+      - name: api
+        image: local/hvac-rag:latest # Local build (k3s image import)
+        imagePullPolicy: Never
+        command: ["node", "backend/rag/hvac-search.mjs"] # Mock API entrypoint
+        env:
+        - name: QDRANT_URL
+          value: "http://qdrant.rag-hvac.svc.cluster.local:6333"
+        volumeMounts:
+        - name: pdfs-volume
+          mountPath: /app/data/pdfs
+      volumes:
+      - name: pdfs-volume
+        persistentVolumeClaim:
+          claimName: pdfs-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hvac-api
+  namespace: rag-hvac
+spec:
+  selector:
+    app: hvac-api
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pdfs-pvc
+  namespace: rag-hvac
+spec:
+  accessModes:
+    - ReadWriteMany # K3s local hostpath supporta RWX
+  resources:
+    requests:
+      storage: 10Gi

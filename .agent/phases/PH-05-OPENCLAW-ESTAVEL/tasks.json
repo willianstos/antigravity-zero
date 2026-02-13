@@ -1,0 +1,19 @@
+{
+    "phase": "PH-05-OPENCLAW-ESTAVEL",
+    "status": "done",
+    "current_task": null,
+    "tasks": [
+        { "id": "5A-1", "group": "LIMPEZA", "title": "Matar processos órfãos", "status": "done" },
+        { "id": "5A-2", "group": "LIMPEZA", "title": "Validar sobreviventes", "status": "done" },
+        { "id": "5A-3", "group": "LIMPEZA", "title": "Limpar logs antigos", "status": "done" },
+        { "id": "5B-1", "group": "DASHBOARD_AUTH", "title": "Obter gateway token", "status": "done" },
+        { "id": "5B-2", "group": "DASHBOARD_AUTH", "title": "Abrir Dashboard", "status": "done" },
+        { "id": "5C-1", "group": "SEGURANCA", "title": "Revogar tokens e atualizar .env", "status": "done" },
+        { "id": "5C-2", "group": "SEGURANCA", "title": "Criar .env.example", "status": "done" },
+        { "id": "5C-3", "group": "SEGURANCA", "title": "Confirmar .gitignore", "status": "done" },
+        { "id": "5C-4", "group": "SEGURANCA", "title": "Auditoria de histórico Git", "status": "done" },
+        { "id": "5D-1", "group": "CONFIG_BEST_PRACTICES", "title": "Headless: true", "status": "done" },
+        { "id": "5D-2", "group": "CONFIG_BEST_PRACTICES", "title": "Doctor", "status": "done" },
+        { "id": "5E-1", "group": "VALIDACAO_FINAL", "title": "Telegram OK", "status": "done" }
+    ]
+}

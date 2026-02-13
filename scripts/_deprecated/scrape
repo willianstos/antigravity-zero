@@ -1,0 +1,1 @@
+#!/bin/bash\nnode /home/zappro/antigravity-zero/tools/pdf-scraper.mjs "$@"
