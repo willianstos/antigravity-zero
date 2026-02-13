@@ -64,12 +64,20 @@ class GeminiWeb {
             const inputSelector = 'div[contenteditable="true"], textarea, .ql-editor, rich-textarea';
             await this.browser.waitFor(inputSelector, 10000);
 
-            // Type the prompt
+            // Type the prompt using a faster method for large payloads
             await this.browser.click(inputSelector);
-            await this.browser.page.keyboard.down('Control');
-            await this.browser.page.keyboard.press('a');
-            await this.browser.page.keyboard.up('Control');
-            await this.browser.type(prompt);
+
+            // Use evaluate to set content directly if it's a rich editor, or use fill
+            await this.browser.page.evaluate(({ selector, text }) => {
+                const el = document.querySelector(selector);
+                if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
+                    el.value = text;
+                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                } else {
+                    el.textContent = text;
+                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }, { selector: inputSelector, text: prompt });
 
             // Press Enter to submit
             await this.browser.page.keyboard.press('Enter');
