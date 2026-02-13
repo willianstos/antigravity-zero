@@ -300,9 +300,13 @@ bot.on('text', async (ctx) => {
 
     // Special prefixes
     if (text.toLowerCase().startsWith('gemini:')) {
-        const prompt = text.slice(7).trim();
-        ctx.reply('🧠 Consultando Gemini Web (Zero Token)...');
-        const res = await jarvisExec('gemini-web', 'ask', { prompt });
+        const promptRaw = text.slice(7).trim();
+        ctx.reply('🧠 Consultando Gemini Web (Injetando Contexto Local)...');
+
+        // Ativa a consciência total (Memos + Arquivos + Logs)
+        const awarenessContext = await bridge.getFullAwareness(promptRaw);
+        const res = await jarvisExec('gemini-web', 'ask', { prompt: awarenessContext });
+
         const reply = res.text || res.result?.text || JSON.stringify(res);
         await bridge.logInteraction('jarvis', reply);
         return ctx.reply(`🧠 **Gemini:**\n\n${reply}`, { parse_mode: 'Markdown' });
@@ -344,7 +348,7 @@ bot.on('text', async (ctx) => {
         return;
     }
 
-    // Try intent detection first
+    // 🔍 1. Tentar detectar intenção fixa (hardcoded regex)
     const intent = bridge.parseIntent(text);
 
     if (intent) {
@@ -362,17 +366,13 @@ bot.on('text', async (ctx) => {
             ctx.reply(`❌ Erro: ${result.error || 'Falha na execução'}`);
         }
     } else {
-        // No intent match — NO MORE POLITE AI CHAT!
-        // Suggest active audit or direct mission
-        ctx.reply(
-            '⚠️ **Comando não mapeado.**\n' +
-            'Como DevOps Sênior, opero com Soberania Total. Use:\n\n' +
-            '• `SUDO: [comando]` Para rodar como Root\n' +
-            '• `EXECUTE: [missão]` Para o Aider agir na raiz\n' +
-            '• `MISSÃO: [ação]` Planejamento autônomo\n' +
-            '• `gemini: [pergunta]` Inteligência Multimodal\n\n' +
-            'Use `/start` para o console de botões.'
-        );
+        // 🧠 2. Fallback: Usar Gemini com consciência total do repositório
+        ctx.reply('🧠 Analisando com consciência local...');
+        const awarenessContext = await bridge.getFullAwareness(text);
+        const res = await jarvisExec('gemini-web', 'ask', { prompt: awarenessContext });
+        const reply = res.text || res.result?.text || JSON.stringify(res);
+        await bridge.logInteraction('jarvis', reply);
+        return ctx.reply(`🧠 **Jarvis:**\n\n${reply}`, { parse_mode: 'Markdown' });
     }
 });
 

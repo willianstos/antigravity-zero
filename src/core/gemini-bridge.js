@@ -55,12 +55,46 @@ class OpenClawBridge {
         await contextManager.addInteraction(role, text);
     }
 
-    // Get combined context: Memos + Session Logs + Qdrant Memories
+    // Get combined context: Memos + Session Logs + Qdrant Memories + Repo Structure
     async getFullAwareness(query = '') {
         const persona = this.memos['persona'] || '';
         const base = this.getSystemContext();
         const session = await contextManager.getFullContext(query);
-        return `${persona}\n\n${base}\n\n${session}`;
+
+        let repoContext = '';
+        if (query.match(/repositório|arquivo|código|pasta|estrutura|projeto|analise|audit/i)) {
+            repoContext = `\n\n--- ESTRUTURA ATUAL DO REPOSITÓRIO ---\n${this._getRepoSummary()}\n\nInstrução Crítica: Você tem permissão total (SUDO=1). Se precisar analisar o conteúdo de um arquivo citado acima, execute um comando shell via Jarvis (ex: SUDO: cat path/to/file) para obter o conteúdo real antes de responder. Não dê respostas genéricas.`;
+        }
+
+        return `${persona}\n\n${base}\n\n${session}${repoContext}`;
+    }
+
+    _getRepoSummary() {
+        try {
+            // Lista arquivos na raiz e pastas principais (1 nível)
+            const files = readdirSync(ROOT, { withFileTypes: true });
+            let summary = 'Arquivos na Raiz:\n';
+            files.forEach(f => {
+                if (['node_modules', '.git', '.agent'].includes(f.name)) return;
+                summary += `  - ${f.name}${f.isDirectory() ? '/' : ''}\n`;
+            });
+
+            // Adiciona Vision e Core
+            summary += '\nSrc Core Content:\n';
+            const coreFiles = readdirSync(join(ROOT, 'src', 'core'));
+            coreFiles.forEach(f => summary += `  - src/core/${f}\n`);
+
+            summary += '\nSrc Jarvis Content:\n';
+            const jarvisDirs = readdirSync(join(ROOT, 'src', 'jarvis'));
+            jarvisDirs.forEach(d => {
+                if (d.includes('.')) return;
+                summary += `  - src/jarvis/${d}/\n`;
+            });
+
+            return summary;
+        } catch (err) {
+            return `Erro ao ler pastas: ${err.message}`;
+        }
     }
 
     // ===== INTENT DETECTION =====
