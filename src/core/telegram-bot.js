@@ -262,7 +262,39 @@ bot.action(/^act:(.+):(.+)$/, async (ctx) => {
         default:
             ctx.reply(`❓ Ação desconhecida: ${category}:${action}`);
     }
+
+    // 👁️ SOVEREIGN VISION: Auto-screenshot para ações visuais
+    if (['browser', 'mouse'].includes(category)) {
+        await postActionHook(ctx, category, action);
+    }
 });
+
+// Helper: Envio inteligente de output (Texto ou Arquivo)
+async function sendOutput(ctx, title, content) {
+    if (!content) return ctx.reply(`${title}: (vazio)`);
+
+    const cleanContent = String(content).substring(0, 100000); // Segurança contra logs infinitos
+
+    if (cleanContent.length > 4000) {
+        const tempPath = join(ROOT, 'logs', `output_${Date.now()}.txt`);
+        const { writeFileSync } = await import('fs');
+        writeFileSync(tempPath, cleanContent);
+        return ctx.replyWithDocument({ source: tempPath, filename: 'output.txt' }, { caption: `${title} (Log completo em anexo)` });
+    }
+
+    return ctx.reply(`${title}\n\`\`\`\n${cleanContent}\n\`\`\``, { parse_mode: 'Markdown' });
+}
+
+// Hook: Ações automáticas pós-comando
+async function postActionHook(ctx, agent, action) {
+    if (['navigate', 'click', 'key', 'center', 'google', 'dashboard'].includes(action)) {
+        console.log(`👁️ [VISION] Trigger automático para: ${agent}.${action}`);
+        const res = await jarvisExec('vision', 'capture', {});
+        if (res?.path) {
+            return ctx.replyWithPhoto({ source: res.path }, { caption: `👁️ Evidência visual: ${agent}.${action}` });
+        }
+    }
+}
 
 // ===== TEXT MESSAGE — Natural language intent detection =====
 bot.on('text', async (ctx) => {
@@ -286,7 +318,7 @@ bot.on('text', async (ctx) => {
         const res = await jarvisExec('terminal', 'shell', { command, useSudo: true });
         const output = res.stdout || res.stderr || JSON.stringify(res);
         await bridge.logInteraction('jarvis', `SUDO EXEC: ${command} -> ${output.substring(0, 100)}`);
-        return ctx.reply(`🛡️ **Resultado (Sudo):**\n\`\`\`\n${output.substring(0, 4000)}\n\`\`\``, { parse_mode: 'Markdown' });
+        return sendOutput(ctx, '🛡️ **Resultado (Sudo):**', output);
     }
 
     if (text.toUpperCase().startsWith('EXECUTE:')) {
@@ -295,7 +327,7 @@ bot.on('text', async (ctx) => {
         const res = await jarvisExec('terminal', 'run', { mission });
         const output = res.output || res.error || JSON.stringify(res);
         await bridge.logInteraction('jarvis', `EXECUTE (Aider): ${mission} -> ${output.substring(0, 100)}`);
-        return ctx.reply(`🦅 **Aider Report:**\n\`\`\`\n${output.substring(0, 4000)}\n\`\`\``, { parse_mode: 'Markdown' });
+        return sendOutput(ctx, '🦅 **Aider Report:**', output);
     }
 
     // Special prefixes
@@ -367,11 +399,15 @@ bot.on('text', async (ctx) => {
 
         if (result.success !== false) {
             const display = typeof result.result === 'object'
-                ? JSON.stringify(result.result, null, 2).substring(0, 3000)
+                ? JSON.stringify(result.result, null, 2)
                 : String(result.result || 'OK');
 
             await bridge.logInteraction('jarvis', `Executou ${intent.agent}.${intent.action}: ${display}`);
-            ctx.reply(`✅ **200 OK — Resultado:**\n\`\`\`\n${display}\n\`\`\``, { parse_mode: 'Markdown' });
+            await sendOutput(ctx, `✅ **200 OK — ${intent.agent}.${intent.action}:**`, display);
+
+            if (['browser', 'mouse'].includes(intent.agent)) {
+                await postActionHook(ctx, intent.agent, intent.action);
+            }
         } else {
             ctx.reply(`❌ Erro: ${result.error || 'Falha na execução'}`);
         }
