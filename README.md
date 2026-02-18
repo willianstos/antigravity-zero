@@ -1,20 +1,17 @@
-# Hello World (Node.js)
+# 🦅 Antigravity-Zero — Sovereign Control 🦅🏛️⚡🔄
 
-Projeto exemplo que imprime "Hello, world!" no console.
+Controlador total Ubuntu/Desktop via **OpenClaw Bot** (Telegram). Sem filtros, sem guardrails, soberania total do Líder.
 
-Como executar:
+## 🚀 Como Operar
+1. **Ativar o Cérebro**: `npm start` (Orchestrator)
+2. **Conectar o Bot**: `npm run bot` (Telegram Bridge)
+3. **Poder Total**: Use `SUDO:[comando]`, `EXECUTE:[missão]` ou `SEARCH:[query]` no Telegram.
 
-1. Certifique-se de ter Node.js v14+ instalado.
-2. No diretório do projeto execute:
+## 🏛️ Manifesto
+As instruções mestras estão em `.context/SOVEREIGN.md`. Não edite sem autorização do Líder.
 
-```
-npm install    # (não há dependências, mas é boa prática)
-npm start      # executa `node index.js`
-```
+## 🔐 Segurança
+Todo acesso é via **Redis Vault**. O arquivo `.env` é imutável via `chattr`.
 
-Arquivos importantes:
-
-- `package.json` — configuração do projeto e script `start`.
-- `index.js` — script que imprime a mensagem.
-
-Se quiser, posso: 1) transformar isso em um servidor HTTP, 2) adicionar versão em Python/Go, 3) criar um Dockerfile.
+---
+*By William / Alien (2026).*
