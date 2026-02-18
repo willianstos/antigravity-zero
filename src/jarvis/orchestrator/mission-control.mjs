@@ -19,65 +19,62 @@ class MissionControl {
             await this.jarvis.boot();
         }
 
-        console.log(`🚀 [MISSÃO] Inicializando: ${mission}`);
+        console.log(`🚀 [MISSÃO SOBERANA] Iniciando: ${mission}`);
 
-        // 1. Planejar usando Gemini Web (Custo Zero de Token)
-        console.log('🧠 [MISSÃO] Planejando...');
-        const planRes = await this.jarvis.execute('gemini-web', 'ask', {
-            prompt: `Como um DevOps Senior, crie um plano de comandos bash sequenciais para esta missão: "${mission}". Use comandos reais (docker, git, npm, echo). Responda APENAS com os blocos de código contendo os comandos.`
-        });
+        let currentState = "Início da missão.";
+        let history = [];
+        let iterations = 0;
+        const MAX_ITERATIONS = 10;
 
-        // Handle result structure from execute()
-        const text = planRes.result?.text || planRes.result || '';
-        const commands = this._extractCommands(text);
-        console.log(`📋 [MISSÃO] Passos detectados: ${commands.length}`);
+        while (iterations < MAX_ITERATIONS) {
+            iterations++;
+            console.log(`🧠 [LOOP ${iterations}] Raciocinando...`);
 
-        if (commands.length === 0) {
-            throw new Error("Não consegui extrair comandos válidos do plano.");
-        }
+            const PROMPT_REASONING = `
+VOCÊ É O BRAÇO EXECUTOR DO JARVIS. MISSÃO: "${mission}"
+ESTADO ATUAL DO SISTEMA: ${currentState}
+HISTÓRICO DE AÇÕES: ${history.join(' -> ')}
 
-        const history = [];
+O QUE DEVE SER FEITO AGORA?
+Responda APENAS com JSON:
+{
+  "thought": "Explicação lógica do próximo passo",
+  "action": "terminal.shell" | "vision.capture" | "browser.navigate" | "mission.complete",
+  "params": { ... },
+  "done": true/false
+}
+`;
 
-        // 2. Executar & Verificar
-        for (const cmd of commands) {
-            console.log(`⚡ [MISSÃO] Executando: ${cmd}`);
-            let attempts = 0;
-            let success = false;
+            const brainRes = await this.jarvis.execute('openai', 'ask', { prompt: PROMPT_REASONING });
+            const decision = JSON.parse(brainRes.result?.text.match(/\{[\s\S]*\}/)[0]);
 
-            while (attempts < 2 && !success) {
-                const result = await this.jarvis.execute('terminal', 'shell', { command: cmd });
-                const resData = result.result || result;
+            console.log(`💭 Pensamento: ${decision.thought}`);
 
-                if (result.success && !this._isError(resData)) {
-                    success = true;
-                    console.log(`  ✅ Sucesso`);
-                    history.push(`✅ ${cmd}`);
-                } else {
-                    attempts++;
-                    console.log(`  ⚠️ Falha (${attempts}). Buscando correção...`);
-                    const errorMsg = resData.error || resData.stderr || 'Unknown terminal error';
-                    const fixRes = await this.jarvis.execute('perplexity', 'quickSearch', {
-                        query: `Erro ao executar "${cmd}" no Ubuntu: ${errorMsg}. Como corrigir via terminal?`
-                    });
-                    const fixText = fixRes.result || '';
-                    const fixCmd = this._extractCommands(fixText)[0];
-                    if (fixCmd) {
-                        await this.jarvis.execute('terminal', 'shell', { command: fixCmd });
-                        history.push(`🔧 Applied fix: ${fixCmd}`);
-                    }
-                }
+            if (decision.done || decision.action === 'mission.complete') {
+                console.log('✅ [MISSÃO] Concluída com sucesso.');
+                break;
+            }
+
+            // Executar Ação
+            const [agent, action] = decision.action.split('.');
+            const result = await this.jarvis.execute(agent, action, decision.params);
+
+            // Observar Resultado
+            const output = result.success ? (result.result?.stdout || result.result || 'Sucesso') : (result.error || 'Falha');
+            history.push(`${decision.action}(${output.toString().substring(0, 50)})`);
+
+            // Atualizar Estado
+            currentState = `Última ação: ${decision.action}. Resultado: ${output.toString().substring(0, 200)}`;
+
+            if (!result.success) {
+                console.log(`⚠️ [ALERTA] Ação falhou. O cérebro tentará corrigir no próximo loop.`);
             }
         }
 
-        // 3. Final Verification
-        console.log('📸 [MISSION] Final visual verification...');
-        const evidence = await this.jarvis.execute('vision', 'capture', {});
-
         return {
-            status: 'COMPLETED',
+            status: iterations >= MAX_ITERATIONS ? 'TIMEOUT' : 'COMPLETED',
             mission,
-            evidence: evidence.result?.path,
-            log: history.join('\n')
+            history
         };
     }
 

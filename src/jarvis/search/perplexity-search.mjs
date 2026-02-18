@@ -1,20 +1,35 @@
-#!/usr/bin/env node
 // ================================================
-// 🔍 PERPLEXITY SEARCH — Deep Research API
-// Replaces Brave Search with Perplexity API
-// Faster, smarter, with citations
+// 🔍 PERPLEXITY SEARCH — Default Search Provider (2026)
+// Substitui Brave Search. Motor principal de busca.
+// Precos reais (por 1M tokens):
+//   sonar              — $0.25 input / $2.50 output  ← PADRAO (mais barato)
+//   sonar-deep-research— $2.00 input / $8.00 output  ← pesquisa profunda
+//   sonar-reasoning-pro— $2.00 input / $8.00 output  ← analise complexa
+//   sonar-pro          — $3.00 input / $15.00 output ← EVITAR (12x mais caro)
 // ================================================
 
 const PERPLEXITY_API = 'https://api.perplexity.ai/chat/completions';
 
+// Mapeamento de tiers por custo (2026)
+const PERPLEXITY_MODELS = {
+    FAST: process.env.PERPLEXITY_MODEL_FAST || 'sonar',               // $0.25/M — padrao Telegram
+    DEEP: process.env.PERPLEXITY_MODEL_DEEP || 'sonar-deep-research', // $2.00/M — pesquisa profunda
+    REASON: process.env.PERPLEXITY_MODEL_REASON || 'sonar-reasoning-pro', // $2.00/M — analise/raciocinio
+};
+
+// Modelo padrao (configuravel via .env)
+const DEFAULT_MODEL = process.env.PERPLEXITY_MODEL || PERPLEXITY_MODELS.FAST;
+
 class PerplexitySearch {
     constructor(apiKey) {
         this.apiKey = apiKey || process.env.PERPLEXITY_API_KEY;
+        this.defaultModel = DEFAULT_MODEL;
         if (!this.apiKey) console.warn('⚠️ [PERPLEXITY] No API key — set PERPLEXITY_API_KEY in .env');
     }
 
     // Deep search with citations
-    async search({ query, model = 'sonar', maxTokens = 1024, systemPrompt = 'You are a precise research assistant. Return factual information with sources. Be concise. Respond in Portuguese (PT-BR) when the query is in Portuguese.' }) {
+    async search({ query, model, maxTokens = 1024, systemPrompt = 'You are a precise research assistant. Return factual information with sources. Be concise. Respond in Portuguese (PT-BR) when the query is in Portuguese.' }) {
+        const resolvedModel = model || this.defaultModel;
         if (!this.apiKey) {
             return { text: 'API key not configured', citations: [], error: 'NO_API_KEY' };
         }
@@ -27,7 +42,7 @@ class PerplexitySearch {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model,
+                    model: resolvedModel,
                     messages: [
                         { role: 'system', content: systemPrompt },
                         { role: 'user', content: query }
@@ -48,12 +63,12 @@ class PerplexitySearch {
             const citations = data.citations || [];
             const usage = data.usage || {};
 
-            console.log(`🔍 [PERPLEXITY] "${query.substring(0, 50)}..." → ${text.length} chars, ${citations.length} citations`);
+            console.log(`🔍 [PERPLEXITY] "${query.substring(0, 50)}" → model:${resolvedModel} | ${text.length} chars | ${citations.length} fontes`);
 
             return {
                 text,
                 citations,
-                model: data.model,
+                model: resolvedModel,
                 tokensUsed: usage.total_tokens || 0,
                 source: 'perplexity-api'
             };
@@ -63,30 +78,36 @@ class PerplexitySearch {
         }
     }
 
-    // Quick factual search (shorter response)
+    // Quick factual search — sonar (mais barato, $0.25/M tokens)
     async quickSearch({ query }) {
-        return this.search({ query, maxTokens: 256, model: 'sonar' });
+        return this.search({ query, maxTokens: 300, model: PERPLEXITY_MODELS.FAST });
     }
 
-    // Deep research (longer, more detailed)
+    // Deep research — sonar-deep-research ($2/M, gera relatorios completos)
     async deepSearch({ query }) {
-        return this.search({ query, maxTokens: 4096, model: 'sonar-pro' });
+        return this.search({ query, maxTokens: 8000, model: PERPLEXITY_MODELS.DEEP });
     }
 
-    // Search and summarize for Telegram (compact format)
+    // Complex reasoning — sonar-reasoning-pro ($2/M, chain-of-thought)
+    async reasonSearch({ query }) {
+        return this.search({ query, maxTokens: 4096, model: PERPLEXITY_MODELS.REASON });
+    }
+
+    // Telegram search — sonar padrao, resposta compacta
     async telegramSearch({ query }) {
-        const result = await this.search({ query, maxTokens: 512 });
-        if (result.error) return `❌ Erro: ${result.error}`;
+        const result = await this.search({ query, maxTokens: 500, model: PERPLEXITY_MODELS.FAST });
+        if (result.error) return `❌ Erro na busca: ${result.error}`;
 
         let response = `🔍 **${query}**\n\n${result.text}`;
 
-        if (result.citations.length > 0) {
+        if (result.citations?.length > 0) {
             response += '\n\n📎 **Fontes:**\n';
-            result.citations.slice(0, 5).forEach((c, i) => {
+            result.citations.slice(0, 4).forEach((c, i) => {
                 response += `${i + 1}. ${c}\n`;
             });
         }
 
+        response += `\n\n_💰 ${result.model} | ${result.tokensUsed} tokens_`;
         return response;
     }
 }

@@ -1,0 +1,18 @@
+[Unit]
+Description=OpenClaw Telegram Bot (Jarvis Controller)
+After=network.target jarvis-swarm.service
+Wants=jarvis-swarm.service
+
+[Service]
+Type=simple
+User=zappro
+WorkingDirectory=/home/zappro/antigravity-zero
+ExecStart=/usr/bin/node src/core/telegram-bot.js
+Restart=always
+RestartSec=10
+StandardOutput=append:/home/zappro/antigravity-zero/logs/bot.log
+StandardError=append:/home/zappro/antigravity-zero/logs/bot-error.log
+EnvironmentFile=/home/zappro/antigravity-zero/.env
+
+[Install]
+WantedBy=multi-user.target

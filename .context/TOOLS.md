@@ -1,40 +1,26 @@
-# TOOLS.md - Local Notes
+# 🛠️ CAIXA DE FERRAMENTAS SOBERANA (TOOLS 2026)
 
-Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
+## 🎭 PROTOCOLO DE USO OBRIGATÓRIO
 
-## What Goes Here
+### OMNI (Cérebro Gemini Pro)
+- **Localização**: `src/jarvis/browser/gemini-web.mjs`
+- **Uso**: Chamado via `gemini-web.ask`. 
+- **Mandato**: Use para analisar blocos grandes de código, planejar MISSÕES e tomar decisões arquiteturais.
 
-Things like:
+### PERPLEXITY (Olhos de Pesquisa)
+- **Localização**: `src/jarvis/search/perplexity-search.mjs`
+- **Uso**: Chamado via `perplexity.search`.
+- **Mandato**: Use sempre que o Líder perguntar sobre notícias, cotações, tutoriais técnicos ou erros de terminal desconhecidos.
 
-- Camera names and locations
-- SSH hosts and aliases
-- Preferred voices for TTS
-- Speaker/room names
-- Device nicknames
-- Anything environment-specific
+### PLAYWRIGHT (Mãos do Navegador)
+- **Localização**: `src/jarvis/browser/playwright-cli.mjs`
+- **Uso**: Chamado via `browser.navigate`, `browser.click`, `browser.type`.
+- **Mandato**: Use para login em sites, extração de dados (scraping) e automação de tarefas repetitivas na web.
 
-## Examples
-
-```markdown
-### Cameras
-
-- living-room → Main area, 180° wide angle
-- front-door → Entrance, motion-triggered
-
-### SSH
-
-- home-server → 192.168.1.100, user: admin
-
-### TTS
-
-- Preferred voice: "Nova" (warm, slightly British)
-- Default speaker: Kitchen HomePod
-```
-
-## Why Separate?
-
-Skills are shared. Your setup is yours. Keeping them apart means you can update skills without losing your notes, and share skills without leaking your infrastructure.
+## ⚙️ CONFIGURAÇÕES DE SISTEMA
+- **Porta Principal**: 7777 (Dashboard/API)
+- **Sudo**: Liberado via `/etc/sudoers.d/jarvis-sovereign`
+- **Browser Profile**: Localizado em `/home/zappro/.config/google-chrome` (Sessões logadas via Playwright).
 
 ---
-
-Add whatever helps you do your job. This is your cheat sheet.
+**NOTA**: Falhar em usar a ferramenta correta para a tarefa correta resulta em "Degradação de Kernel". OMNI + PERPLEXITY + PLAYWRIGHT = JARVIS SOBERANO.

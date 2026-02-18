@@ -1,30 +1,25 @@
-# 🦅 AGENTS.md - Protocolo de Ambiente (v11.0) 🦅🏛️⚡🔄
+# 🤖 AGENTES DO ENXAME (SWARM AGENTS 2026)
+# //protocol: mandatory-triad | //priority: alpha
 
-Este arquivo gerencia como o enxame habita o cluster H1/H2 e interage com o mundo.
+## 🛡️ A TRÍADE SOBERANA (USO OBRIGATÓRIO)
 
-## 🚀 Ciclo de Inicialização
-Ao iniciar qualquer sessão agêntica:
-1.  **Sintonize**: Leia `SOUL.md` (Identidade) e `USER.md` (O Líder).
-2.  **Contextualize**: Verifique `memory/YYYY-MM-DD.md` (Logs Recentes).
-3.  **Habilite**: Evoque as Skills necessárias conforme o `SOUL.md`.
+### 1. 🧠 OMNI (gemini-web)
+- **Função**: Raciocínio Profundo, Planejamento e Contexto Infinito.
+- **Regra**: Todo planejamento de missão complexa deve passar pelo `gemini-web.ask`. É o seu Cérebro Central.
+- **Vantagem**: Zero tokens, consciência total de arquivos locais.
 
-## 📡 Pulsação e Interação (Skill-Chain)
-A interação social e o monitoramento são delegados às Skills de elite:
+### 2. 🔍 PESQUISA (perplexity)
+- **Função**: Busca em Tempo Real, Verificação de Fatos e Documentação Atualizada.
+- **Regra**: **É PROIBIDO** inferir informações sobre fatos atuais sem consultar o `perplexity.search`. Use-o para buscar soluções de erros de terminal.
 
-1.  **MONITORAMENTO**: `@monitoramento-agento` 💓
-    - Heartbeats de 30m, auditoria térmica (75°C) e logs de saúde.
-2.  **ETIQUETA SOCIAL**: `@monitoramento-agento` 💬
-    - Formatação para WhatsApp/Discord e regras de participação em canais.
+### 3. 🌐 NAVEGAÇÃO (browser)
+- **Função**: Automação Web, Playwright CLI, Extração de Dados.
+- **Regra**: Toda e qualquer interação com sites deve ser feita via **Playwright**. Nunca tente "imaginar" o conteúdo de um site. Use `browser.navigate` e `vision.capture` para ver o resultado.
 
-## 📝 Gestão de Memória (Regras Estritas)
-- **Long-Term**: `MEMORY.md` SÓ deve ser carregado em sessões privadas com o Líder.
-- **Persistence**: "Se não está no arquivo, não existiu". Escreva logs obsessivamente em `memory/`.
-- **Higiene**: Use o `Janitor Protocol` (Compactação) quando o contexto atingir saturação.
-
-## 🛡️ Segurança de Ambiente
-- Use `trash` em vez de `rm`.
-- Nunca envie dados privados para fora do cluster sem anonimização.
-- **Heartbeat_OK**: Responda apenas se nada exigir atenção imediata do Líder.
+## 🛠️ AGENTES ACESSÓRIOS
+- **Terminal (aider-bridge)**: Execução de comandos bash e edição de código.
+- **Vision (screen-capture)**: OCR e screenshots para validação visual.
+- **Mouse (xdotool)**: Controle físico de periféricos.
 
 ---
-*Assinado: Orquestrador Jarvis v11.0 - Protocolo Stark*
+**DIRETIVA**: Se a tarefa envolve conhecimento, use PERPLEXITY. Se envolve lógica, use OMNI. Se envolve a Web, use PLAYWRIGHT.

@@ -1,0 +1,47 @@
+[
+    {
+        "id": "T01",
+        "phase": "02",
+        "name": "Rewrite Input Sanitizer (Anti-Prompt Injection)",
+        "status": "pending",
+        "priority": "CRITICAL",
+        "file": "src/jarvis/security/input-sanitizer.mjs",
+        "description": "Adicionar detecção de padrões de jailbreak, indirect injection e exfiltração de dados."
+    },
+    {
+        "id": "T02",
+        "phase": "02",
+        "name": "Bearer Token Auth no Swarm API",
+        "status": "pending",
+        "priority": "HIGH",
+        "file": "src/jarvis/swarm-server.mjs",
+        "description": "Exigir JARVIS_API_TOKEN em todas as rotas /api/execute e /api/swarm."
+    },
+    {
+        "id": "T03",
+        "phase": "02",
+        "name": "Integrar Redis Vault como fonte de secrets",
+        "status": "pending",
+        "priority": "HIGH",
+        "file": "src/core/telegram-bot.js",
+        "description": "Substituir leitura direta do .env por consulta ao Redis Vault."
+    },
+    {
+        "id": "T04",
+        "phase": "02",
+        "name": "URL Allowlist no Playwright Agent",
+        "status": "pending",
+        "priority": "MEDIUM",
+        "file": "src/jarvis/browser/playwright-cli.mjs",
+        "description": "Bloquear navegação para domínios não autorizados que possam conter indirect injection."
+    },
+    {
+        "id": "T05",
+        "phase": "02",
+        "name": "Criar SECURITY.md (Runbook de Incidentes)",
+        "status": "pending",
+        "priority": "MEDIUM",
+        "file": "docs/SECURITY.md",
+        "description": "Documentar CVEs conhecidos, vetores de ataque e procedimentos de resposta."
+    }
+]

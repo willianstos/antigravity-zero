@@ -1,0 +1,55 @@
+[
+    {
+        "id": "T01",
+        "phase": "04",
+        "name": "Criar token-router.mjs",
+        "status": "done",
+        "priority": "CRITICAL",
+        "file": "src/jarvis/ai/token-router.mjs",
+        "description": "Classifica complexidade e roteia para modelo mais barato. Economia: 50-70%."
+    },
+    {
+        "id": "T02",
+        "phase": "04",
+        "name": "Criar semantic-cache.mjs",
+        "status": "done",
+        "priority": "HIGH",
+        "file": "src/jarvis/ai/semantic-cache.mjs",
+        "description": "Cache Redis de respostas por hash semântico. Economia: 30-40% nas repetições."
+    },
+    {
+        "id": "T03",
+        "phase": "04",
+        "name": "Comprimir PERSONA.md",
+        "status": "done",
+        "priority": "HIGH",
+        "file": ".context/PERSONA.md",
+        "description": "Reduzido de 1.880 para ~380 chars. Economia: 80% nos tokens de sistema."
+    },
+    {
+        "id": "T04",
+        "phase": "04",
+        "name": "Integrar token-router no telegram-bot.js",
+        "status": "done",
+        "priority": "CRITICAL",
+        "file": "src/core/telegram-bot.js",
+        "description": "Loop principal agora usa routing + cache antes de chamar API."
+    },
+    {
+        "id": "T05",
+        "phase": "04",
+        "name": "Adicionar MODEL_FAST/BALANCED/POWER no .env",
+        "status": "pending",
+        "priority": "HIGH",
+        "file": ".env.example",
+        "description": "Configurar modelos Grok por tier no .env."
+    },
+    {
+        "id": "T06",
+        "phase": "04",
+        "name": "Fix Redis REDIS_URL com senha correta",
+        "status": "pending",
+        "priority": "HIGH",
+        "description": "Descobrir senha do Redis e atualizar .env para ativar o cache semântico."
+    }
+]

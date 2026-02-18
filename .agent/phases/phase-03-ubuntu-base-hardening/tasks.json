@@ -1,0 +1,64 @@
+[
+    {
+        "id": "T01",
+        "phase": "03",
+        "name": "Habilitar os-prober no GRUB",
+        "status": "pending",
+        "priority": "CRITICAL",
+        "cmd": "sudo sed -i 's/#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub",
+        "description": "Permite que o GRUB detecte o Windows 11 no /dev/sda."
+    },
+    {
+        "id": "T02",
+        "phase": "03",
+        "name": "Configurar GRUB_TIMEOUT e menu visível",
+        "status": "pending",
+        "priority": "CRITICAL",
+        "cmd": "sudo sed -i 's/GRUB_TIMEOUT=0/GRUB_TIMEOUT=5/' /etc/default/grub && sudo sed -i 's/GRUB_TIMEOUT_STYLE=hidden/GRUB_TIMEOUT_STYLE=menu/' /etc/default/grub",
+        "description": "Exibe o menu de boot por 5 segundos para escolher entre Xubuntu e Windows."
+    },
+    {
+        "id": "T03",
+        "phase": "03",
+        "name": "Remover quiet splash (boot limpo)",
+        "status": "pending",
+        "priority": "HIGH",
+        "cmd": "sudo sed -i 's/quiet splash/loglevel=3 nowatchdog/' /etc/default/grub",
+        "description": "Remove a tela de splash e reduz mensagens de boot ao mínimo."
+    },
+    {
+        "id": "T04",
+        "phase": "03",
+        "name": "Executar update-grub",
+        "status": "pending",
+        "priority": "CRITICAL",
+        "cmd": "sudo update-grub",
+        "description": "Regenera o grub.cfg detectando o Windows 11 no /dev/sda."
+    },
+    {
+        "id": "T05",
+        "phase": "03",
+        "name": "Corrigir REDIS_URL no .env",
+        "status": "pending",
+        "priority": "HIGH",
+        "description": "Verificar a senha do Redis e atualizar REDIS_URL no .env."
+    },
+    {
+        "id": "T06",
+        "phase": "03",
+        "name": "Criar serviço systemd para Jarvis Swarm",
+        "status": "pending",
+        "priority": "HIGH",
+        "file": "infra/systemd/jarvis-swarm.service",
+        "description": "Auto-start do Swarm Server no boot do Ubuntu."
+    },
+    {
+        "id": "T07",
+        "phase": "03",
+        "name": "Criar serviço systemd para OpenClaw Bot",
+        "status": "pending",
+        "priority": "HIGH",
+        "file": "infra/systemd/openclaw-bot.service",
+        "description": "Auto-start do Telegram Bot no boot do Ubuntu."
+    }
+]

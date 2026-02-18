@@ -1,0 +1,4 @@
+[2026-02-15T11:18:02.991Z] AGENT: terminal | ACTION: shell | PARAMS: {"command":"ls -la docs/","useSudo":true}
+[2026-02-15T11:21:46.817Z] AGENT: terminal | ACTION: shell | PARAMS: {"command":"echo \"TERMINAL: Execução de comandos bash com acesso root. CODER: Execução de missões complexas. VISION: Captura de tela e OCR. BROWSER: Navegação automatizada com Playwright.\"","useSudo":true}
+[2026-02-15T11:21:47.226Z] AGENT: terminal | ACTION: run | PARAMS: {"mission":"\"O que você tem de ferramentas e habilidades disponíveis ?\""}
+[2026-02-15T11:21:48.658Z] AGENT: terminal | ACTION: run | PARAMS: {"mission":"\"O que você tem de ferramentas e habilidades disponíveis ?\""}

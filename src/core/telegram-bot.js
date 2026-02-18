@@ -12,6 +12,8 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { OpenClawBridge } from './openclaw-bridge.mjs';
 import { sanitize } from '../jarvis/security/input-sanitizer.mjs';
+import { classifyTask, estimateTokens, estimateCost } from '../jarvis/ai/token-router.mjs';
+import semanticCache from '../jarvis/ai/semantic-cache.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..', '..');
@@ -59,6 +61,12 @@ bot.use(async (ctx, next) => {
     return next();
 });
 
+// ===== GLOBAL ERROR HANDLER =====
+bot.catch((err, ctx) => {
+    console.error(`❌ [TELEGRAF] Error for ${ctx.updateType}:`, err);
+    ctx.reply(`❌ Ocorreu um erro interno: ${err.message}`).catch(() => { });
+});
+
 // ===== /start — Main menu with inline keyboard =====
 bot.start((ctx) => {
     ctx.reply(
@@ -94,6 +102,9 @@ bot.start((ctx) => {
                 ],
                 [
                     Markup.button.callback('📊 Status Jarvis', 'act:system:status'),
+                    Markup.button.callback('📡 Tailscale Audit', 'act:network:tailscale'),
+                ],
+                [
                     Markup.button.callback('🧪 Self-Test', 'act:system:selftest'),
                 ],
             ])
@@ -259,6 +270,14 @@ bot.action(/^act:(.+):(.+)$/, async (ctx) => {
             );
             break;
 
+        case 'network:tailscale':
+            ctx.reply('📡 Realizando auditoria na rede Tailscale...');
+            result = await jarvisExec('terminal', 'shell', {
+                command: 'echo "🌐 Local IP: $(tailscale ip -4)" && echo "🖥️ Mini Nodes Status:" && tailscale status --json | jq -r \'.Peer[] | select(.Online == true) | "  ✅ \\(.HostName) (\\(.TailscaleIPs[0]))"\' && echo "💤 Offline Nodes:" && tailscale status --json | jq -r \'.Peer[] | select(.Online == false) | "  💤 \\(.HostName)"\' | head -n 5'
+            });
+            ctx.reply(`📡 **Tailscale Report:**\n\`\`\`\n${result?.stdout || JSON.stringify(result)}\n\`\`\``, { parse_mode: 'Markdown' });
+            break;
+
         default:
             ctx.reply(`❓ Ação desconhecida: ${category}:${action}`);
     }
@@ -366,17 +385,39 @@ bot.on('text', async (ctx) => {
             ctx.reply(`❌ Erro: ${result.error || 'Falha na execução'}`);
         }
     } else {
-        // 🦅 JARVIS SOVEREIGN RECURSIVE LOOP (ReAct)
-        ctx.reply('🦅 Jarvis em transe soberano (Sudo=1)...');
+        // 💰 TOKEN ECONOMY ENGINE — Smart Routing + Semantic Cache
+
+        // 1. Verificar cache semântico ANTES de chamar a API
+        const cached = await semanticCache.get(text);
+        if (cached) {
+            await bridge.logInteraction('jarvis', cached);
+            return ctx.reply(`🗃️ **Jarvis** *(cache)*:\n\n${cached}`, { parse_mode: 'Markdown' });
+        }
+
+        // 2. Classificar complexidade e selecionar modelo
         let currentPrompt = await bridge.getFullAwareness(text);
+        const contextTokens = estimateTokens(currentPrompt);
+        const routing = classifyTask(text, contextTokens);
+
+        console.log(`💰 [ROUTER] Tier: ${routing.tier} | Model: ${routing.model} | Reason: ${routing.reason} | ~${contextTokens} ctx tokens`);
+
+        // 3. Loop recursivo com profundidade reduzida para economizar tokens
         let depth = 0;
-        const MAX_DEPTH = 3;
+        const MAX_DEPTH = routing.tier === 'POWER' ? 3 : 2; // FAST/BALANCED: max 2 loops
 
         while (depth < MAX_DEPTH) {
-            const res = await jarvisExec('gemini-web', 'ask', { prompt: currentPrompt });
-            const reply = res.text || res.result?.text || "";
+            const res = await jarvisExec('openai', 'ask', {
+                prompt: currentPrompt,
+                model: routing.model,
+                maxTokens: routing.limits.maxOutput,
+            });
 
-            // Detecta se o modelo quer agir antes de falar
+            const reply = res.text || res.result?.text || '';
+            if (!reply) {
+                return ctx.reply('❌ Falha crítica: LLM API offline ou retornou vazio.');
+            }
+
+            // Detecta intenção de ação (SUDO: ou EXECUTE:)
             const sudoMatch = reply.match(/SUDO:\s*(.+)/i);
             const execMatch = reply.match(/EXECUTE:\s*(.+)/i);
 
@@ -384,19 +425,23 @@ bot.on('text', async (ctx) => {
                 const cmd = sudoMatch ? sudoMatch[1].split('\n')[0] : execMatch[1].split('\n')[0];
                 const type = sudoMatch ? 'SUDO' : 'EXECUTE';
 
-                ctx.reply(`🛡️ **Auto-Exec (${type}):** \`${cmd}\`...`);
+                ctx.reply(`🛡️ **Executando (${type}):** \`${cmd}\`...`);
 
                 const execution = await jarvisExec('terminal', sudoMatch ? 'shell' : 'run',
                     sudoMatch ? { command: cmd, useSudo: true } : { mission: cmd });
 
-                const output = (execution.stdout || execution.output || execution.error || "Executado.").substring(0, 10000);
-
-                // Alimenta o resultado de volta para a consciência do Jarvis
-                currentPrompt = `[SISTEMA FEEDBACK]\nComando: ${cmd}\nSaída:\n${output}\n\nAnalise o resultado acima e responda ao Líder ou execute o próximo passo da missão: "${text}"`;
+                const output = (execution.stdout || execution.output || execution.error || 'Executado.').substring(0, 10000);
+                currentPrompt = `[FEEDBACK]: ${cmd}\nSaída:\n${output}\n\nConclua a missão ou execute o próximo passo: "${text}"`;
                 depth++;
             } else {
+                // 4. Armazenar resposta no cache para futuras perguntas similares
+                const outTokens = estimateTokens(reply);
+                const cost = estimateCost(routing.tier, contextTokens, outTokens);
+                await semanticCache.set(text, reply, { tokens: contextTokens + outTokens, tier: routing.tier, model: routing.model });
+                console.log(`💰 [COST] ~$${cost.toFixed(6)} | ${routing.tier} | in:${contextTokens} out:${outTokens} tokens`);
+
                 await bridge.logInteraction('jarvis', reply);
-                return ctx.reply(`🧠 **Jarvis:**\n\n${reply}`, { parse_mode: 'Markdown' });
+                return ctx.reply(`🧠 **Jarvis** *(${routing.tier})*:\n\n${reply}`, { parse_mode: 'Markdown' });
             }
         }
     }

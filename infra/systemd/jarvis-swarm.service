@@ -1,0 +1,18 @@
+[Unit]
+Description=Jarvis Swarm API Server
+After=network.target redis.service qdrant.service
+Wants=redis.service
+
+[Service]
+Type=simple
+User=zappro
+WorkingDirectory=/home/zappro/antigravity-zero
+ExecStart=/usr/bin/node src/jarvis/swarm-server.mjs
+Restart=always
+RestartSec=5
+StandardOutput=append:/home/zappro/antigravity-zero/logs/swarm.log
+StandardError=append:/home/zappro/antigravity-zero/logs/swarm-error.log
+EnvironmentFile=/home/zappro/antigravity-zero/.env
+
+[Install]
+WantedBy=multi-user.target

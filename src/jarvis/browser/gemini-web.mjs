@@ -126,8 +126,9 @@ class GeminiWeb {
     }
 
     // Take screenshot of the Gemini conversation
-    async screenshot(filename = 'gemini-response.png') {
-        return await this.browser.screenshot(filename);
+    async screenshot(params = 'gemini-response.png') {
+        const filename = (typeof params === 'object') ? params.filename : params;
+        return await this.browser.screenshot(filename || 'gemini-response.png');
     }
 
     async close() {

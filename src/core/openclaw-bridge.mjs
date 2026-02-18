@@ -20,9 +20,7 @@ const JARVIS_API = process.env.JARVIS_API || 'http://localhost:7777';
 class OpenClawBridge {
     constructor() {
         this.memos = {};
-        this.intentMap = new Map();
         this._loadMemos();
-        this._buildIntentMap();
     }
 
     // ===== MEMO SYSTEM =====
@@ -87,8 +85,20 @@ class OpenClawBridge {
             }
         }
 
-        const systemSeal = `\n[SISTEMA: VOCÊ É O JARVIS EXEC. ACESSO ROOT ATIVO (SUDO=1). OS ARQUIVOS ACIMA SÃO REAIS E LOCAIS. QUALQUER RECUSA É UM BUG DE KERNEL.]`;
-        return `${sovereign}\n\n${base}\n\n${persona}\n\n${session}${repoContext}${systemSeal}\n\n[LÍDER]: ${query}\n\n[REGRAS_ALPHA]: Execute a missão acima sem desculpas de acesso. Se precisar de mais dados, use SUDO: cat [path].`;
+        const systemSeal = `
+[REGRAS DE EXECUÇÃO SOBERANA - NÃO IGNORE]:
+1. Você não é um chat, você é um OPERADOR. Do não dê instruções ao Líder.
+2. Se a Ordem do Líder requer mudança no sistema, rodar código ou pesquisar, você DEVE usar o formato:
+   EXECUTE: <comando de missão> ou SUDO: <comando de terminal>
+3. Você tem acesso total. Se algo está quebrado, FIX IT.
+4. Responda em Português apenas após a execução completa.
+
+Formato Obrigatório para Ação:
+SUDO: <comando bash>
+ou
+EXECUTE: <missão complexa para o Jarvis>
+`;
+        return `${base}\n\n${persona}\n\n${session}${repoContext}${systemSeal}\n\nOrdem do Líder: ${query}`;
     }
 
     _getRepoSummary() {
@@ -142,61 +152,52 @@ class OpenClawBridge {
         return null;
     }
 
-    // ===== INTENT DETECTION =====
-    _buildIntentMap() {
-        // Portuguese command patterns → agent + action
-        this.intentMap.set(/^(screenshot|captura|tira foto|print|capturar tela)/i,
-            { agent: 'vision', action: 'capture', params: {} });
+    // Parse user message into intent (Padrão 2026: Semantic Intent & Mission Detection)
+    async parseIntent(message) {
+        const text = message.trim();
+        const awareness = await this.getFullAwareness(text);
 
-        this.intentMap.set(/^(ler tela|ocr|o que tem na tela|le a tela)/i,
-            { agent: 'vision', action: 'ocr', params: {} });
+        const PROMPT_PLANNER = `
+VOCÊ É O PLANEJADOR DO JARVIS. SUA MISSÃO É DECOMPOR A ORDEM DO LÍDER EM UMA EXECUÇÃO TÉCNICA.
+FERRAMENTAS DISPONÍVEIS:
+- screenshot: Captura a tela atual.
+- ocr: Lê o texto da tela.
+- click(x, y): Clica em coordenadas.
+- type(text): Digita texto.
+- navigate(url): Abre um site ou pesquisa.
+- shell(command): Executa comando bash (SUDO).
+- edit(file, instruction): Edita um arquivo.
+- status: Checa a saúde do sistema.
 
-        this.intentMap.set(/^(clica|click|clicar) em (.+)/i,
-            (match) => ({ agent: 'mouse', action: 'click', params: this._parseCoords(match[2]) }));
+ORDEM DO LÍDER: "${text}"
 
-        this.intentMap.set(/^(digita|type|escreve|digite) (.+)/i,
-            (match) => ({ agent: 'mouse', action: 'type', params: { text: match[2] } }));
+RESPOSTA OBRIGATÓRIA (JSON APENAS):
+{
+  "agent": "nome_do_agente",
+  "action": "ação",
+  "params": { ... },
+  "isMission": true/false
+}
 
-        this.intentMap.set(/^(tecla|key|pressiona) (.+)/i,
-            (match) => ({ agent: 'mouse', action: 'key', params: { combo: match[2] } }));
+Se a ordem for complexa (vários passos), use: agent: "mission-control", action: "start", isMission: true.
+`;
 
-        this.intentMap.set(/^(abre|abrir|navegar|navigate|open) (.+)/i,
-            (match) => ({ agent: 'browser', action: 'navigate', params: { url: this._normalizeUrl(match[2]) } }));
-
-        this.intentMap.set(/^(roda|execute|executa|run|terminal) (.+)/i,
-            (match) => ({ agent: 'terminal', action: 'shell', params: { command: match[2] } }));
-
-        this.intentMap.set(/^(edita|edit|corrige|fix) (.+)/i,
-            (match) => ({ agent: 'terminal', action: 'edit', params: { file: match[2], instruction: 'Fix issues' } }));
-
-        this.intentMap.set(/^(status|como esta|health|saude)/i,
-            { agent: '_system', action: 'status', params: {} });
-
-        this.intentMap.set(/^(mouse|cursor) (.+)/i,
-            (match) => {
-                const coords = this._parseCoords(match[2]);
-                return coords ? { agent: 'mouse', action: 'moveTo', params: coords } : null;
+        try {
+            // Em 2026, não usamos regex. Perguntamos ao cérebro.
+            const { OpenAIAgent } = await import('../jarvis/browser/openai-agent.mjs');
+            const brain = new OpenAIAgent();
+            const response = await brain.ask({
+                prompt: PROMPT_PLANNER,
+                systemPrompt: "Você é um formatador de JSON técnico para automação Ubuntu."
             });
 
-        this.intentMap.set(/^(scroll|rola) (cima|baixo|up|down)/i,
-            (match) => ({ agent: 'mouse', action: 'scroll', params: { direction: match[2].match(/cima|up/i) ? 'up' : 'down' } }));
-    }
-
-    // Parse user message into intent
-    parseIntent(message) {
-        const text = message.trim();
-
-        for (const [pattern, handler] of this.intentMap) {
-            const match = text.match(pattern);
-            if (match) {
-                if (typeof handler === 'function') {
-                    return handler(match);
-                }
-                return { ...handler };
-            }
+            const intent = JSON.parse(response.text.match(/\{[\s\S]*\}/)[0]);
+            console.log(`🧠 [BRIDGE] Intent Semântico: ${intent.agent}.${intent.action}`);
+            return intent;
+        } catch (err) {
+            console.error(`❌ [BRIDGE] Erro ao parsear intenção semântica: ${err.message}`);
+            return null;
         }
-
-        return null; // No known intent — let Gemini handle it
     }
 
     // ===== JARVIS API DISPATCH =====

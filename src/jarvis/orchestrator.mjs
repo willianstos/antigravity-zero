@@ -52,6 +52,9 @@ class JarvisOrchestrator extends EventEmitter {
         const { PersistentBrowser } = await import('./browser/persistent-browser.mjs');
         this.registerAgent('persistent-browser', new PersistentBrowser());
 
+        const { OpenAIAgent } = await import('./browser/openai-agent.mjs');
+        this.registerAgent('openai', new OpenAIAgent());
+
         const { MissionControl } = await import('./orchestrator/mission-control.mjs');
         this.registerAgent('mission-control', new MissionControl());
 
@@ -95,6 +98,7 @@ class JarvisOrchestrator extends EventEmitter {
             this.emit('task:complete', { agent: agentName, action, result });
             return { success: true, agent: agentName, action, result };
         } catch (err) {
+            console.error(`❌ [${agentName}] Erro na execução: ${err.message}`);
             agent.status = 'error';
             this.metrics.tasksFailed++;
             this.emit('task:error', { agent: agentName, action, error: err.message });

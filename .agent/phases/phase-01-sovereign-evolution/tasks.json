@@ -1,0 +1,26 @@
+[
+    {
+        "id": "T01",
+        "name": "Integration OpenRouter Unfiltered",
+        "status": "pending",
+        "description": "Configurar o agente OpenAI para aceitar modelos via OpenRouter e ignorar filtros."
+    },
+    {
+        "id": "T02",
+        "name": "Function Calling Bridge",
+        "status": "pending",
+        "description": "Substituir regex por detecção de intenção via LLM no bridge do OpenClaw."
+    },
+    {
+        "id": "T03",
+        "name": "Recursive Mission Control",
+        "status": "pending",
+        "description": "Implementar loop de raciocínio autônomo para execução de tarefas complexas."
+    },
+    {
+        "id": "T04",
+        "name": "Sovereignty Audit",
+        "status": "pending",
+        "description": "Validar a execução de comandos root e acesso a arquivos restritos sem bloqueio de prompt."
+    }
+]

@@ -49,10 +49,12 @@ const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://localhost:${PORT}`);
     const path = url.pathname;
 
-    // CORS
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // CORS — Restrito a localhost (CVE-2026-25253 mitigation)
+    const origin = req.headers.origin || '';
+    const allowedOrigin = origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1') ? origin : 'http://localhost';
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
     if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
@@ -61,10 +63,33 @@ const server = http.createServer(async (req, res) => {
     const rlCheck = limiter.middleware()(req, res, null);
     if (rlCheck !== true && !path.startsWith('/api/status') && path.startsWith('/api/')) return;
 
+    // Bearer Token Auth para rotas de execução (T02 - CVE-2026-25253)
+    const JARVIS_TOKEN = process.env.JARVIS_API_TOKEN;
+    if (JARVIS_TOKEN && (path.startsWith('/api/execute') || path.startsWith('/api/swarm'))) {
+        const authHeader = req.headers['authorization'] || '';
+        const token = authHeader.replace('Bearer ', '').trim();
+        if (token !== JARVIS_TOKEN) {
+            res.writeHead(401, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Unauthorized: Invalid or missing API token' }));
+            return;
+        }
+    }
+
     // --- API Routes ---
     if (path === '/api/status') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(jarvis.getStatus()));
+        return;
+    }
+
+    if (path === '/api/heartbeat') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+            status: 'alive',
+            timestamp: new Date().toISOString(),
+            version: '1.0.0-opus',
+            sovereign: true
+        }));
         return;
     }
 
