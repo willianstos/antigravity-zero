@@ -320,6 +320,16 @@ bot.on('text', async (ctx) => {
         return ctx.reply(res, { parse_mode: 'Markdown' });
     }
 
+    if (text.toLowerCase().startsWith('grok:') || text.toLowerCase().startsWith('llm:')) {
+        const promptRaw = text.slice(text.indexOf(':') + 1).trim();
+        ctx.reply('🦅 Consultando Grok/Dolphin (Uncensored Mode)...');
+        const awarenessContext = await bridge.getFullAwareness(promptRaw);
+        const res = await jarvisExec('llm', 'ask', { prompt: awarenessContext });
+        const reply = res.text || res.error || JSON.stringify(res);
+        await bridge.logInteraction('jarvis', reply);
+        return ctx.reply(`🦅 **Grok:**\n\n${reply}`, { parse_mode: 'Markdown' });
+    }
+
     if (text.toLowerCase().startsWith('recall:')) {
         const query = text.slice(7).trim();
         ctx.reply('🧠 Buscando na Memória Infinita (Qdrant)...');

@@ -55,6 +55,9 @@ class JarvisOrchestrator extends EventEmitter {
         const { MissionControl } = await import('./orchestrator/mission-control.mjs');
         this.registerAgent('mission-control', new MissionControl());
 
+        const { OpenAIAgent } = await import('./browser/llm-engine.mjs');
+        this.registerAgent('llm', new OpenAIAgent());
+
         this.status = 'ready';
         console.log(`✅ [JARVIS] All ${this.agents.size} agents online`);
         this.emit('ready', this.getStatus());

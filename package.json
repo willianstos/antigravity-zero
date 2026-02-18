@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node src/jarvis/orchestrator.mjs",
-    "bot": "node src/core/telegram-bot.js",
+    "bot": "pkill -f 'node src/core/telegram-bot.js' || true && node src/core/telegram-bot.js",
     "swarm": "node src/jarvis/swarm-server.mjs",
     "infra:up": "cd infra && sudo docker compose up -d",
     "infra:status": "node scripts/bootstrap-stability.mjs",
