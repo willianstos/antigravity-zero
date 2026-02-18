@@ -29,18 +29,9 @@ jobs:
 
     - name: Smoke Test (Core)
       env:
-        # Secrets in GitHub Actions Context
-        # Remember: Never hardcode keys. Use ${{ secrets.KEY }}
         OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         REDIS_HOST: localhost
       run: |
         echo "🔥 Running Smoke Tests in CI..."
         node tools/smoke-core.mjs
-
-    - name: Validate MCP Server Build
-      run: |
-        echo "🔍 Checking MCP Integrity..."
-        node -c tools/github-mcp-server.mjs

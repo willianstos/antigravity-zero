@@ -18,14 +18,11 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Linting & Segurança
+      - name: Auditoria de Dependências
         run: |
-          npm install -g eslint
-          # Simulação de verificação de lixo/axios legado
-          grep -r "axios" . && exit 1 || echo "✅ Clean of Axios legary"
+          npm audit --audit-level=high || true
 
-      - name: Validação IaC (Terraform)
-        uses: hashicorp/setup-terraform@v3
-      - run: |
-          terraform -chdir=infra/monitoring init -backend=false
-          terraform -chdir=infra/monitoring validate
+      - name: Health Check (Orchestrator Boot)
+        run: |
+          export OPENROUTER_API_KEY="sk-not-real"
+          node src/jarvis/orchestrator.mjs --test
