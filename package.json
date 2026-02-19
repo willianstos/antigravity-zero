@@ -16,7 +16,11 @@
     "infra:up": "cd infra && sudo docker compose up -d",
     "infra:status": "node scripts/bootstrap-stability.mjs",
     "audit": "node tests/super-test.mjs",
-    "tf:apply": "cd infra/terraform && terraform apply -auto-approve"
+    "test": "node --check src/jarvis/orchestrator.mjs && node --check src/jarvis/browser/llm-engine.mjs && echo '✅ Syntax OK'",
+    "maestro:status": "curl -s http://localhost:11434/api/tags 2>/dev/null | head -c 500 || echo '⚠️ Ollama offline'",
+    "prod": "npm run infra:up && npm run swarm & npm run bot",
+    "tf:apply": "cd infra/terraform && terraform apply -auto-approve",
+    "prepare": "cp scripts/pre-commit-hook.sh .git/hooks/pre-commit 2>/dev/null && chmod +x .git/hooks/pre-commit 2>/dev/null || true"
   },
   "author": "Will-dev (Sovereign)",
   "license": "MIT",
@@ -30,14 +34,14 @@
   },
   "keywords": [
     "jarvis",
-    "desktop-automation",
+    "hvac-r",
     "ai-agent",
     "swarm",
-    "terraform",
-    "localstack",
-    "minio",
-    "playwright",
-    "aider",
+    "daikin",
+    "pmoc",
+    "local-first-ai",
+    "ollama",
+    "qwen",
     "openclaw"
   ]
 }

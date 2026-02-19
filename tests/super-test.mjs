@@ -8,7 +8,7 @@
 import { spawnSync, spawn } from 'child_process';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import fetch from 'node-fetch';
+// Node 22+ has native fetch — no import needed
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
