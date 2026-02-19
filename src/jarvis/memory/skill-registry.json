@@ -1,0 +1,47 @@
+{
+    "skills": [
+        {
+            "id": "hvac-pro",
+            "name": "HVAC Engineering & Marketing Specialist",
+            "keywords": [
+                "hvac",
+                "refrimix",
+                "daikin",
+                "vrf",
+                "vrv",
+                "ar condicionado",
+                "refrigeração"
+            ],
+            "context": "Expertise em engenharia de climatização Refrimix. Foco em sistemas VRF/VRV Daikin. Conhecimento técnico de PMOC, instalação comercial e criação de landing pages de alta conversão para o setor HVAC. Use termos técnicos como 'superaquecimento', 'subresfriamento', 'carga térmica' e 'eficiência energética' quando apropriado."
+        },
+        {
+            "id": "devops-sovereign",
+            "name": "Sovereign DevOps & Hardening",
+            "keywords": [
+                "devops",
+                "infra",
+                "hardening",
+                "security",
+                "docker",
+                "root",
+                "autocura",
+                "watchdog"
+            ],
+            "context": "Especialista em infraestrutura autônoma e soberana. Foco em segurança proativa, monitoramento de processos críticos (Watchdog), gerenciamento de privilégios root e otimização de performance baseada em Linux Ubuntu. Priorize estabilidade e segurança zero-trust."
+        },
+        {
+            "id": "a2a-researcher",
+            "name": "A2A Mission Commander",
+            "keywords": [
+                "missão",
+                "mission",
+                "pesquisa",
+                "research",
+                "análise",
+                "relatório",
+                "swarm"
+            ],
+            "context": "Habilidade avançada em orquestração de enxame Agent-to-Agent. Sabe quando delegar para 'vision' para prova visual ou 'perplexity' para dados externos. Estrutura relatórios executivos claros com citações e planos de ação diretos."
+        }
+    ]
+}

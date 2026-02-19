@@ -2,8 +2,8 @@
     "templates": [
         {
             "id": "hvac-landing-deploy",
-            "name": "Deploy HVAC Landing Page",
-            "mission": "Crie uma landing page de alta conversão para Refrimix HVAC usando HTML5 semantic e Vanilla CSS. Foco em VRV/VRF Daikin.",
+            "name": "Deploy HVAC Landing Page Specialist",
+            "mission": "Crie uma landing page de elite para Refrimix HVAC. Use HTML5/CSS3 moderno. Inclua seções para VRV/VRF Daikin, CTA para PMOC e design focado em conversão técnica. Ative o skill 'hvac-pro'.",
             "tags": [
                 "hvac",
                 "marketing",
@@ -11,21 +11,30 @@
             ]
         },
         {
-            "id": "security-audit-root",
-            "name": "Full Security Audit",
-            "mission": "Execute um scan completo de seguranca no repo. Busque por leaks de chaves em .env, permissoes de root inseguras e auditoria de pacotes npm.",
+            "id": "hvac-maintenance-plan",
+            "name": "Plano de Manutenção VRV Pro",
+            "mission": "Gere um plano de manutenção preventiva técnica para um sistema de 50 HP VRV Daikin. Inclua checklist de pressão, amperagem e limpeza de filtros. Salve como PDF/TXT.",
             "tags": [
-                "security",
-                "audit"
+                "hvac",
+                "execucao"
             ]
         },
         {
-            "id": "fix-redis-lock",
-            "name": "Fix Redis Instance Conflicts",
-            "mission": "Identifique processos zumbis do Redis ou do Bot e limpe a stack para um restart limpo (Soberano).",
+            "id": "security-audit-standard",
+            "name": "Sovereign Security Audit",
+            "mission": "Audite o repositório em busca de chaves expostas, portas inseguras e permissões de arquivos. Gere um relatório de hardening seguindo o padrão 'devops-sovereign'.",
             "tags": [
-                "ops",
-                "fix"
+                "security",
+                "ops"
+            ]
+        },
+        {
+            "id": "market-deep-dive",
+            "name": "Market Intelligence Report",
+            "mission": "Pesquise as tendências de mercado para HVAC comercial no Brasil (2025-2026). Use Wide Research para buscar CAGR e principais players locais.",
+            "tags": [
+                "research",
+                "market"
             ]
         }
     ]

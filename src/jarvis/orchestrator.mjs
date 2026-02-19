@@ -123,6 +123,24 @@ class JarvisOrchestrator extends EventEmitter {
         const llm = this.agents.get('llm');
         const { TRANSFORM_TOOL_CALL } = await import('./swarm/protocol.mjs');
 
+        // Elite Pro: Auto Skill Injection
+        let skillContext = '';
+        try {
+            const registryPath = join(ROOT, 'src', 'jarvis', 'memory', 'skill-registry.json');
+            if (existsSync(registryPath)) {
+                const { skills } = JSON.parse(readFileSync(registryPath, 'utf8'));
+                const matched = skills.filter(s =>
+                    s.keywords.some(k => missionPrompt.toLowerCase().includes(k.toLowerCase()))
+                );
+                if (matched.length > 0) {
+                    console.log(`🧠 [SKILL-INJECT] Matched ${matched.length} skills: ${matched.map(m => m.name).join(', ')}`);
+                    skillContext = matched.map(m => `[SKILL: ${m.name}]\n${m.context}`).join('\n\n');
+                }
+            }
+        } catch (e) {
+            console.error('⚠️ [SKILL-INJECT] Failed to load registry:', e.message);
+        }
+
         let currentPrompt = missionPrompt;
         let history = [];
         let steps = 0;
@@ -133,7 +151,7 @@ class JarvisOrchestrator extends EventEmitter {
 
             const llmRes = await llm.module.ask({
                 prompt: currentPrompt,
-                systemPrompt: `Você é o Swarm Commander. Use ferramentas para cumprir a missão. Se terminar, responda com "MISSÃO FINALIZADA: [resultado]". Histórico: ${JSON.stringify(history)}`,
+                systemPrompt: `Você é o Swarm Commander. Use ferramentas para cumprir a missão. Se terminar, responda com "MISSÃO FINALIZADA: [resultado]".\n\n${skillContext}\n\nHistórico: ${JSON.stringify(history)}`,
                 useTools: true
             });
 
