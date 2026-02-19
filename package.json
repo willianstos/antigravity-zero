@@ -1,7 +1,7 @@
 {
   "name": "antigravity-zero",
-  "version": "1.0.0-opus",
-  "description": "Jarvis Desktop Controller — AI-powered Ubuntu automation with OpenClaw Bot hub",
+  "version": "1.5.0-sovereign-elite",
+  "description": "Sovereign Swarm Commander — Elite Pro HVAC-R Assistant 2026",
   "type": "module",
   "main": "src/jarvis/orchestrator.mjs",
   "engines": {

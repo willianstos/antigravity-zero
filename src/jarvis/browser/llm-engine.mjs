@@ -36,13 +36,18 @@ class OpenAIAgent {
 
     // SDR (Sovereign Dynamic Routing) — Elite Catalog 2026
     static STRATEGIES = {
+        MAESTRO: {
+            model: 'qwen2.5-omni-7b', // Target local model (XONG-3060)
+            desc: 'Local Intelligence / Zero Latency / XONG-3060 Power',
+            maxTokens: 8192
+        },
         SOVEREIGN: {
             model: 'venice-ai/dolphin-mistral-24b-venice',
             desc: 'Uncensored / Zero Guardrails / Venice Privada',
             maxTokens: 4096
         },
         LOGIC_MAX: {
-            model: 'meta-llama/llama-3.1-405b-instruct', // or openai/o1-mini
+            model: 'meta-llama/llama-3.1-405b-instruct',
             desc: 'Deep Reasoning / Architecture / Complex Math',
             maxTokens: 8192
         },

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * 🚀 JARVIS SUPER-TEST 2026 — Sovereign Edition
+ * 🚀 JARVIS SUPER-TEST v1.5.0-sovereign-elite
  * Cascade: [Syntax/Lint] -> [Smoke] -> [Memory/Qdrant] -> [Visual E2E]
- * This test only passes if the entire OpenClaw Swarm is healthy.
+ * Node: XONG-3060 | Industry: HVAC-R 2026
  */
 
 import { spawnSync, spawn } from 'child_process';

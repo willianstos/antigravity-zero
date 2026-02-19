@@ -1,21 +1,26 @@
 #!/usr/bin/env node
 // ================================================
 // 🛡️ INPUT SANITIZER — Sovereign Edition (2026)
-// OPENCLAW LIBERTADO — Zero Guardrails Mode
+// JARVIS ELITE — HVAC-R Industrial Protection
 // ================================================
 
 // In Sovereign Mode, we trust the Leader (Admin).
-// Blocking is minimal to allow full DevOps automation.
+// Blocking is minimal but industry-specific for 2026.
 const BLOCKED_PATTERNS = [
-    // /rm\s+(-rf?\s+)?[\/~]/i,           // ALLOWED in sovereign mode
-    // /sudo\s+(rm|shutdown|reboot|init)/i, // ALLOWED
-    /TELEGRAM_BOT_TOKEN/i,              // Still blocked for extreme safety
+    /TELEGRAM_BOT_TOKEN/i,              // Extreme safety
     /GEMINI_API_KEY/i,
+    /OPENROUTER_API_KEY/i,
+    /rm -rf .*\/data\/pmoc/i,            // PROTECT HVAC LOGS
+    /rm -rf .*\/brain/i,                 // PROTECT MISSIONS
+    /curl.*\.env/i,                      // PROTECT SECRETS
 ];
 
-// High limit for heavy code payloads
-const MAX_INPUT_LENGTH = 50000;
+// High limit for heavy code payloads (Elite Pro)
+const MAX_INPUT_LENGTH = 100000;
 
+/**
+ * Sanitiza o input bruto para evitar injeções catastróficas.
+ */
 export function sanitize(input) {
     if (!input || typeof input !== 'string') {
         return { safe: false, reason: 'Invalid input type' };
@@ -27,15 +32,21 @@ export function sanitize(input) {
 
     for (const pattern of BLOCKED_PATTERNS) {
         if (pattern.test(input)) {
-            return { safe: false, reason: `Critical Block: ${pattern.source}` };
+            return { safe: false, reason: `Fiscal Chato Block: ${pattern.source}` };
         }
     }
 
     return { safe: true };
 }
 
+/**
+ * Auditiva comandos shell. No modo Soberano, quase tudo é permitido,
+ * exceto comandos que deletam a inteligência do sistema.
+ */
 export function sanitizeShellCommand(cmd) {
-    // In Sovereign mode, every shell command from the Leader is considered intentional.
+    if (cmd.includes('rm -rf /') || cmd.includes('rm -rf ~')) {
+        return { safe: false, reason: 'Tentativa de suicídio do sistema detectada.' };
+    }
     return { safe: true };
 }
 
