@@ -114,6 +114,54 @@ class JarvisOrchestrator extends EventEmitter {
         return results.map(r => r.status === 'fulfilled' ? r.value : r.reason);
     }
 
+    /**
+     * 🦅 AUTONOMOUS MISSION (A2A Loop)
+     * The LLM orchestrates the swarm via tools until task complete.
+     */
+    async runAutonomousMission(missionPrompt, maxSteps = 5) {
+        console.log(`🦅 [A2A] Mission Start: "${missionPrompt}"`);
+        const llm = this.agents.get('llm');
+        const { TRANSFORM_TOOL_CALL } = await import('./swarm/protocol.mjs');
+
+        let currentPrompt = missionPrompt;
+        let history = [];
+        let steps = 0;
+
+        while (steps < maxSteps) {
+            steps++;
+            console.log(`🔄 [A2A] Step ${steps}/${maxSteps}...`);
+
+            const llmRes = await llm.module.ask({
+                prompt: currentPrompt,
+                systemPrompt: `Você é o Swarm Commander. Use ferramentas para cumprir a missão. Se terminar, responda com "MISSÃO FINALIZADA: [resultado]". Histórico: ${JSON.stringify(history)}`,
+                useTools: true
+            });
+
+            if (llmRes.text.includes('MISSÃO FINALIZADA:')) {
+                return { success: true, log: llmRes.text, history };
+            }
+
+            if (llmRes.toolCalls.length > 0) {
+                const results = [];
+                for (const tool of llmRes.toolCalls) {
+                    const action = TRANSFORM_TOOL_CALL(tool);
+                    if (action) {
+                        const stepRes = await this.execute(action.agent, action.action, action.params);
+                        results.push({ tool: tool.function.name, result: stepRes });
+                        history.push({ step: steps, action, result: stepRes });
+                    }
+                }
+                currentPrompt = `Resultado do passo anterior:\n${JSON.stringify(results)}\n\nContinue a missão.`;
+            } else {
+                // No tools, just text - ask for finalization
+                currentPrompt = `Você não usou ferramentas. Se a missão acabou, use "MISSÃO FINALIZADA: [resultado]". Caso contrário, use as ferramentas disponíveis.`;
+                history.push({ step: steps, text: llmRes.text });
+            }
+        }
+
+        return { success: false, error: 'Max steps reached', history };
+    }
+
     getStatus() {
         const agentStatuses = {};
         for (const [name, agent] of this.agents) {

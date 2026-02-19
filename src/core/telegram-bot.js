@@ -369,19 +369,29 @@ bot.on('text', async (ctx) => {
         return sendOutput(ctx, '🔎 **WIDE RESEARCH EVIDÊNCIA:**', response);
     }
 
-    if (text.toLowerCase().startsWith('grok:') || text.toLowerCase().startsWith('llm:')) {
-        const promptRaw = text.slice(text.indexOf(':') + 1).trim();
-        const thinkingMsg = await ctx.reply('🧠 **Jarvis Thinking...**\n`[Step 1/3] Analisando contexto soberano...`', { parse_mode: 'Markdown' });
+    const specializedPrefixes = ['grok:', 'llm:', 'claude:', 'o1:', 'venice:', 'deepseek:'];
+    const lowerText = text.toLowerCase();
+    const activePrefix = specializedPrefixes.find(p => lowerText.startsWith(p));
+
+    if (activePrefix) {
+        const promptRaw = text.slice(activePrefix.length).trim();
+        const modelKey = activePrefix.replace(':', '');
+        const thinkingMsg = await ctx.reply(`🧠 **Jarvis Thinking (${modelKey})...**\n\`[Step 1/3] Analisando contexto soberano...\``, { parse_mode: 'Markdown' });
 
         const awarenessContext = await bridge.getFullAwareness(promptRaw);
-        await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, '🧠 **Jarvis Thinking...**\n`[Step 2/3] Consultando Grok/Dolphin (Max Mode)...`', { parse_mode: 'Markdown' });
+        await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, `🧠 **Jarvis Thinking (${modelKey})...**\n\`[Step 2/3] Roteando via SDR: ${modelKey} (OpenRouter)... \``, { parse_mode: 'Markdown' });
 
-        const res = await jarvisExec('llm', 'askWithRouting', { prompt: awarenessContext });
+        const useRouting = ['grok', 'llm'].includes(modelKey);
+        const res = await jarvisExec('llm', useRouting ? 'askWithRouting' : 'ask', {
+            prompt: awarenessContext,
+            model: useRouting ? null : modelKey
+        });
+
         const reply = res.text || res.error || JSON.stringify(res);
         await bridge.logInteraction('jarvis', reply);
 
-        await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, '🧠 **Jarvis Thinking...**\n`[Step 3/3] Finalizando resposta elite...`', { parse_mode: 'Markdown' });
-        return ctx.reply(`🦅 **Grok:**\n\n${reply}`, { parse_mode: 'Markdown' });
+        await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, `🧠 **Jarvis Thinking (${modelKey})...**\n\`[Step 3/3] Finalizando resposta elite... \``, { parse_mode: 'Markdown' });
+        return ctx.reply(`🦅 **${modelKey.toUpperCase()}:**\n\n${reply}`, { parse_mode: 'Markdown' });
     }
 
     if (text.toLowerCase().startsWith('recall:')) {
@@ -393,24 +403,31 @@ bot.on('text', async (ctx) => {
 
     if (text.toUpperCase().startsWith('MISSÃO:') || text.toUpperCase().startsWith('MISSION:')) {
         const mission = text.split(':').slice(1).join(':').trim();
-        const thinkingMsg = await ctx.reply(`🚀 **Missão Iniciada:** ${mission}\n\`[Status] Planejando execução soberana...\``, { parse_mode: 'Markdown' });
+        const thinkingMsg = await ctx.reply(`🚀 **Missão Soberana Iniciada:** ${mission}\n\`[Status] Acionando o Swarm A2A (Manus Pro Mode)...\``, { parse_mode: 'Markdown' });
 
         try {
-            await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, `🚀 **Missão:** ${mission}\n\`[Status] Acionando Mission Control (Autonomous)... \``, { parse_mode: 'Markdown' });
-            const result = await jarvisExec('mission-control', 'run', { mission });
+            await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, `🚀 **Missão:** ${mission}\n\`[A2A] Loop de orquestração iniciado... \``, { parse_mode: 'Markdown' });
 
-            if (result.status === 'COMPLETED') {
-                await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, `🚀 **Missão:** ${mission}\n\`[Status] Missão Completa! ✅\``, { parse_mode: 'Markdown' });
-                if (result.evidence) {
-                    await ctx.replyWithPhoto({ source: result.evidence }, { caption: `✅ **Missão Completa!**\n\n${result.log.substring(0, 100)}...`, parse_mode: 'Markdown' });
-                } else {
-                    await ctx.reply(`✅ **Missão Completa!**\n\nLog:\n\`\`\`\n${result.log}\n\`\`\``, { parse_mode: 'Markdown' });
+            const { JarvisOrchestrator } = await import('../jarvis/orchestrator.mjs');
+            const orchestrator = new JarvisOrchestrator();
+            await orchestrator.boot();
+
+            const result = await orchestrator.runAutonomousMission(mission);
+
+            if (result.success) {
+                await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, `🚀 **Missão:** ${mission}\n\`[Status] Sucesso absoluto. ✅\``, { parse_mode: 'Markdown' });
+                await sendOutput(ctx, '✅ **Relatório de Missão Final:**', result.log);
+
+                // Evidência visual final
+                const visionRes = await jarvisExec('vision', 'capture', {});
+                if (visionRes?.path) {
+                    await ctx.replyWithPhoto({ source: visionRes.path }, { caption: `🏆 Evidência Final da Missão` });
                 }
             } else {
-                ctx.reply(`❌ Falha na missão: ${result.error || 'Erro desconhecido'}`);
+                ctx.reply(`❌ Missão abortada: ${result.error || 'Erro no loop A2A'}`);
             }
         } catch (err) {
-            ctx.reply(`❌ Erro no Mission Control: ${err.message}`);
+            ctx.reply(`❌ Erro Fatal na Missão: ${err.message}`);
         }
         return;
     }
