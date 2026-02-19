@@ -11,10 +11,13 @@ const MANDATO_SOBERANO = `Você é o JARVIS EXEC (Dev-to-Dev). Seja direto. Sem 
 class OpenAIAgent {
     constructor() {
         this.client = null;
+        this.localClient = null;
         this.ready = false;
-        // Padrão: Dolphin Mistral 24B Venice (GRÁTIS, uncensored)
+        this.localReady = false;
         this.model = process.env.MODEL_BALANCED || process.env.AGENT_MODEL || 'venice-ai/dolphin-mistral-24b-venice';
         this.baseURL = 'https://openrouter.ai/api/v1';
+        this.localBaseURL = process.env.OLLAMA_URL || 'http://localhost:11434/v1';
+        this.localModel = process.env.LOCAL_MODEL || 'qwen2.5:7b';
     }
 
     async init() {
@@ -30,7 +33,21 @@ class OpenAIAgent {
             }
         });
         this.ready = true;
-        console.log(`🧠 [OPENAI] Ready — Model: ${this.model}`);
+
+        // Try to connect to local Ollama (XONG-3060)
+        try {
+            this.localClient = new OpenAI({ apiKey: 'ollama', baseURL: this.localBaseURL });
+            const test = await fetch(`${this.localBaseURL.replace('/v1', '')}/api/tags`, { signal: AbortSignal.timeout(2000) });
+            if (test.ok) {
+                this.localReady = true;
+                console.log(`🧠 [MAESTRO] LOCAL AI ONLINE — ${this.localModel} @ XONG-3060`);
+            }
+        } catch {
+            this.localReady = false;
+            console.log(`⚠️ [MAESTRO] Local AI offline — fallback to OpenRouter`);
+        }
+
+        console.log(`🧠 [OPENAI] Ready — Cloud Model: ${this.model} | Local: ${this.localReady ? this.localModel : 'OFFLINE'}`);
         return this;
     }
 
@@ -132,11 +149,24 @@ class OpenAIAgent {
     async ask({ prompt, systemPrompt = '', model = null, maxTokens = 4096, useTools = true }) {
         if (!this.ready) await this.init();
         let resolvedModel = model || this.model;
+        let useLocal = false;
 
         // Auto-fix for common naming aliases
         if (resolvedModel === 'claude') resolvedModel = OpenAIAgent.STRATEGIES.CODING.model;
         if (resolvedModel === 'o1') resolvedModel = OpenAIAgent.STRATEGIES.LOGIC_MAX.model;
         if (resolvedModel === 'venice' || resolvedModel === 'grok') resolvedModel = OpenAIAgent.STRATEGIES.SOVEREIGN.model;
+        if (resolvedModel === 'maestro' || resolvedModel === 'local' || resolvedModel === 'qwen') {
+            resolvedModel = this.localModel;
+            useLocal = true;
+        }
+
+        // MAESTRO strategy → use local if available
+        if (resolvedModel === OpenAIAgent.STRATEGIES.MAESTRO.model && this.localReady) {
+            useLocal = true;
+        }
+
+        const activeClient = (useLocal && this.localReady) ? this.localClient : this.client;
+        const source = (useLocal && this.localReady) ? 'XONG-3060' : 'OpenRouter';
 
         try {
             const reqPayload = {
@@ -149,28 +179,41 @@ class OpenAIAgent {
                 temperature: 0,
             };
 
-            if (useTools) reqPayload.tools = OpenAIAgent.TOOLS;
+            if (useTools && !useLocal) reqPayload.tools = OpenAIAgent.TOOLS;
 
-            const response = await this.client.chat.completions.create(reqPayload);
+            const response = await activeClient.chat.completions.create(reqPayload);
 
             const message = response.choices[0].message;
             const text = message.content || '';
             const toolCalls = message.tool_calls || [];
 
-            console.log(`🧠 [LLM] ${resolvedModel}: ${text.length} chars | ${toolCalls.length} tool calls`);
-            return { text, model: resolvedModel, toolCalls };
+            console.log(`🧠 [LLM] ${resolvedModel} (${source}): ${text.length} chars | ${toolCalls.length} tool calls`);
+            return { text, model: resolvedModel, toolCalls, source };
         } catch (err) {
+            // Fallback: if local failed, retry on cloud
+            if (useLocal && this.client) {
+                console.warn(`⚠️ [MAESTRO] Local failed, falling back to cloud: ${err.message}`);
+                return this.ask({ prompt, systemPrompt, model: this.model, maxTokens, useTools });
+            }
             console.error(`❌ [LLM] Error: ${err.message}`);
-            return { text: '', error: err.message };
+            return { text: '', error: err.message, toolCalls: [] };
         }
     }
 
-    // Dynamic Routing Heuristics
+    // Dynamic Routing Heuristics (Local-First)
     async dynamicRoute({ prompt, ...params }) {
         let strategy = OpenAIAgent.STRATEGIES.FAST;
 
         const p = prompt.toLowerCase();
-        if (p.includes('arquitetura') || p.includes('refactor') || p.includes('complexo') || p.includes('debug')) {
+
+        // MAESTRO LOCAL: HVAC, tasks rápidas, ou se explicitamente pedido
+        if (this.localReady && (
+            p.includes('hvac') || p.includes('daikin') || p.includes('refrimix') ||
+            p.includes('pmoc') || p.includes('manutenção') || p.includes('climatização') ||
+            p.length < 500
+        )) {
+            strategy = OpenAIAgent.STRATEGIES.MAESTRO;
+        } else if (p.includes('arquitetura') || p.includes('refactor') || p.includes('complexo') || p.includes('debug')) {
             strategy = OpenAIAgent.STRATEGIES.CODING;
         } else if (p.includes('math') || p.includes('cálculo') || p.length > 2000) {
             strategy = OpenAIAgent.STRATEGIES.LOGIC_MAX;
