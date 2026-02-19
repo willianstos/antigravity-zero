@@ -352,13 +352,35 @@ bot.on('text', async (ctx) => {
         return ctx.reply(res, { parse_mode: 'Markdown' });
     }
 
+    if (text.toLowerCase().startsWith('research:')) {
+        const query = text.slice(9).trim();
+        const thinkingMsg = await ctx.reply('🔎 **Iniciando Wide Research (Manus Pro Mode)...**\n`[Status] Consultando bases de dados globais...`', { parse_mode: 'Markdown' });
+
+        const res = await jarvisExec('perplexity', 'wideSearch', { query });
+
+        await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, '🔎 **Wide Research Finalizado.**\n`[Status] Sintetizando relatório de elite...`', { parse_mode: 'Markdown' });
+
+        let response = `🔎 **RELATÓRIO DE PESQUISA: ${query}**\n\n${res.text || res.error}`;
+        if (res.citations?.length > 0) {
+            response += '\n\n📚 **REFERÊNCIAS:**\n' + res.citations.slice(0, 10).map((c, i) => `${i + 1}. ${c}`).join('\n');
+        }
+
+        await bridge.logInteraction('jarvis', response);
+        return sendOutput(ctx, '🔎 **WIDE RESEARCH EVIDÊNCIA:**', response);
+    }
+
     if (text.toLowerCase().startsWith('grok:') || text.toLowerCase().startsWith('llm:')) {
         const promptRaw = text.slice(text.indexOf(':') + 1).trim();
-        ctx.reply('🦅 Consultando Grok/Dolphin (Uncensored Mode)...');
+        const thinkingMsg = await ctx.reply('🧠 **Jarvis Thinking...**\n`[Step 1/3] Analisando contexto soberano...`', { parse_mode: 'Markdown' });
+
         const awarenessContext = await bridge.getFullAwareness(promptRaw);
-        const res = await jarvisExec('llm', 'ask', { prompt: awarenessContext });
+        await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, '🧠 **Jarvis Thinking...**\n`[Step 2/3] Consultando Grok/Dolphin (Max Mode)...`', { parse_mode: 'Markdown' });
+
+        const res = await jarvisExec('llm', 'askWithRouting', { prompt: awarenessContext });
         const reply = res.text || res.error || JSON.stringify(res);
         await bridge.logInteraction('jarvis', reply);
+
+        await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, '🧠 **Jarvis Thinking...**\n`[Step 3/3] Finalizando resposta elite...`', { parse_mode: 'Markdown' });
         return ctx.reply(`🦅 **Grok:**\n\n${reply}`, { parse_mode: 'Markdown' });
     }
 
@@ -371,11 +393,14 @@ bot.on('text', async (ctx) => {
 
     if (text.toUpperCase().startsWith('MISSÃO:') || text.toUpperCase().startsWith('MISSION:')) {
         const mission = text.split(':').slice(1).join(':').trim();
-        ctx.reply(`🚀 **Missão Iniciada:** ${mission}\n\nAguarde, vou planejar e executar tudo no background de forma soberana...`);
+        const thinkingMsg = await ctx.reply(`🚀 **Missão Iniciada:** ${mission}\n\`[Status] Planejando execução soberana...\``, { parse_mode: 'Markdown' });
 
         try {
+            await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, `🚀 **Missão:** ${mission}\n\`[Status] Acionando Mission Control (Autonomous)... \``, { parse_mode: 'Markdown' });
             const result = await jarvisExec('mission-control', 'run', { mission });
+
             if (result.status === 'COMPLETED') {
+                await ctx.telegram.editMessageText(ctx.chat.id, thinkingMsg.message_id, null, `🚀 **Missão:** ${mission}\n\`[Status] Missão Completa! ✅\``, { parse_mode: 'Markdown' });
                 if (result.evidence) {
                     await ctx.replyWithPhoto({ source: result.evidence }, { caption: `✅ **Missão Completa!**\n\n${result.log.substring(0, 100)}...`, parse_mode: 'Markdown' });
                 } else {

@@ -34,7 +34,7 @@ class OpenAIAgent {
         return this;
     }
 
-    async ask({ prompt, systemPrompt = '', model = null, maxTokens = 2048 }) {
+    async ask({ prompt, systemPrompt = '', model = null, maxTokens = 4096 }) {
         if (!this.ready) await this.init();
         const resolvedModel = model || this.model;
 
@@ -58,7 +58,25 @@ class OpenAIAgent {
         }
     }
 
-    async askWithRouting(params) { return this.ask(params); }
+    // Manus/Meta Style: Tiered Reasoning
+    async askMax(params) {
+        // Grok-2 or Llama-3.1-405B for deep architecture/coding
+        const model = process.env.MODEL_POWER || 'meta-llama/llama-3.1-405b-instruct';
+        console.log(`🧠 [LLM-MAX] Using ${model} for deep reasoning...`);
+        return this.ask({ ...params, model, maxTokens: 8192 });
+    }
+
+    async askLite(params) {
+        // Fast Dolphin/24B for quick checks
+        const model = process.env.MODEL_FAST || 'venice-ai/dolphin-mistral-24b-venice';
+        console.log(`🧠 [LLM-LITE] Using ${model} for quick response...`);
+        return this.ask({ ...params, model, maxTokens: 2048 });
+    }
+
+    async askWithRouting(params) {
+        const isComplex = params.prompt.length > 1000 || params.prompt.match(/arquitetura|refactor|debug|complexo|fix|projeto/i);
+        return isComplex ? this.askMax(params) : this.askLite(params);
+    }
 }
 
 export default OpenAIAgent;

@@ -1,0 +1,32 @@
+{
+    "templates": [
+        {
+            "id": "hvac-landing-deploy",
+            "name": "Deploy HVAC Landing Page",
+            "mission": "Crie uma landing page de alta conversão para Refrimix HVAC usando HTML5 semantic e Vanilla CSS. Foco em VRV/VRF Daikin.",
+            "tags": [
+                "hvac",
+                "marketing",
+                "web"
+            ]
+        },
+        {
+            "id": "security-audit-root",
+            "name": "Full Security Audit",
+            "mission": "Execute um scan completo de seguranca no repo. Busque por leaks de chaves em .env, permissoes de root inseguras e auditoria de pacotes npm.",
+            "tags": [
+                "security",
+                "audit"
+            ]
+        },
+        {
+            "id": "fix-redis-lock",
+            "name": "Fix Redis Instance Conflicts",
+            "mission": "Identifique processos zumbis do Redis ou do Bot e limpe a stack para um restart limpo (Soberano).",
+            "tags": [
+                "ops",
+                "fix"
+            ]
+        }
+    ]
+}

@@ -70,7 +70,18 @@ class PerplexitySearch {
 
     // Deep research (longer, more detailed)
     async deepSearch({ query }) {
-        return this.search({ query, maxTokens: 4096, model: 'sonar-pro' });
+        return this.search({ query, maxTokens: 4000, model: 'sonar-pro' });
+    }
+
+    // Wide Research (Manus/Meta Style): Extreme depth
+    async wideSearch({ query }) {
+        console.log(`🔍 [WIDE-RESEARCH] Starting deep parallel research for: ${query}`);
+        return this.search({
+            query,
+            maxTokens: 8000,
+            model: 'sonar-deep-research',
+            systemPrompt: 'You are an elite research agent. Perform a high-depth analysis. Include market data, trends, and technical specifications. Respond in PT-BR if query is in PT-BR.'
+        });
     }
 
     // Search and summarize for Telegram (compact format)
